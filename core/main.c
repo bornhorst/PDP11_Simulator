@@ -1,7 +1,6 @@
-
 #include "pdp.h"
 
-int main(){
+int main(int argc, char *argv[]){
 
 int line_num = 0;
 
@@ -9,7 +8,15 @@ char *filename;
 
 char *line[MAX_LINES];
 
-filename = "practice.ascii";
+if(argc == 2)
+	filename = argv[1];
+else if(argc < 2){
+	printf("./pdp 'filename'\n");
+	return -1;
+}else{
+	printf("Too many arguments!\n");
+	return -1;
+}
 
 line_num = rd_ascii_file(filename, line);
 

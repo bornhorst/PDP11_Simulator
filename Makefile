@@ -1,7 +1,7 @@
 # simple makefile
 
-compile: main.c pdp.c
-	gcc -o pdp main.c pdp.c 
+compile: core/main.c core/pdp.c
+	gcc -o pdp core/main.c core/pdp.c 
 
 clean:
 	rm pdp

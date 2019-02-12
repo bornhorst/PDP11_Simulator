@@ -19,7 +19,12 @@ DEFINES
 
 #define MAX_LINES	500
 
-/********
+/**********
 ASCII File I/O
-*********/
+***********/
 int rd_ascii_file(char *, char **line);
+
+/**********
+STRING to OCTAL
+**********/
+int convert_to_octal(char **, unsigned long *, int);

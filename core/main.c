@@ -8,6 +8,8 @@ char *filename;
 
 char *line[MAX_LINES];
 
+unsigned long oct_num[MAX_LINES];
+
 if(argc == 2)
 	filename = argv[1];
 else if(argc < 2){
@@ -20,9 +22,13 @@ else if(argc < 2){
 
 line_num = rd_ascii_file(filename, line);
 
+convert_to_octal(line, oct_num, line_num);
+
 for(int i = 0; i < line_num; i++){
-	printf("%s\n", line[i]);
-	memmove(line[i], line[i]+1, 6);
+	printf("%lo\n", oct_num[i]);
+}
+
+for(int i = 0; i < line_num; i++){
 	printf("%s\n", line[i]);
 	free(line[i]);
 }

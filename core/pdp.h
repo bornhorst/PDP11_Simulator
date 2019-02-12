@@ -3,7 +3,9 @@
 #include <stdlib.h>
 
 /*********
+
 DEFINES
+
 **********/
 #define MAX_BUFF 	20
 
@@ -20,11 +22,15 @@ DEFINES
 #define MAX_LINES	500
 
 /**********
-ASCII File I/O
+
+ASCII FILE I/O
+
 ***********/
-int rd_ascii_file(char *, char **line);
+int rd_ascii_file(char *, char **);
 
 /**********
-STRING to OCTAL
+
+STRING TO OCTAL
+
 **********/
 int convert_to_octal(char **, unsigned long *, int);

@@ -1,6 +1,5 @@
-
-
-
+;PDP11 Assembly Instructions 
+;used to generate ascii read in by simulator
 
 OLD:	.WORD	0
 NEW:	.WORD	0

@@ -1,16 +1,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 /*********
 
 DEFINES
 
 **********/
-#define MAX_BUFF 	20
 
-#define MAX_ADDR 	02000000
+/***** Buffer Size *****/
+#define BUFF_SIZE 	20
 
+/***** File I/O Buffer *****/
+#define LINE_SIZE	500
+
+/***** Memory Size *****/
+#define ADDR_SIZE 	0177777
+
+/***** Octals *****/
+#define ZERO		00
 #define ONE		01
 #define TWO 		02
 #define THREE 		03
@@ -19,18 +28,14 @@ DEFINES
 #define SIX		06
 #define SEVEN 		07	
 
-#define MAX_LINES	500
-
 /**********
 
-ASCII FILE I/O
+FUNCTIONS
 
 ***********/
+
+/***** File I/O *****/
 int rd_ascii_file(char *, char **);
 
-/**********
-
-STRING TO OCTAL
-
-**********/
-int convert_to_octal(char **, unsigned long *, int);
+/***** String to Octal *****/
+int str_to_oct(char **, unsigned long *, uint16_t *, int);

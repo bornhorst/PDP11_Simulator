@@ -1,0 +1,11 @@
+# 
+# Executables #
+#
+
+pdp
+ascii/macro11
+ascii/obj2ascii
+
+# Git #
+
+*.git

@@ -9,6 +9,10 @@ DEFINES
 
 **********/
 
+/***** State *****/
+#define ERROR_NONE	0
+#define ERROR	       -1
+
 /***** Buffer Size *****/
 #define BUFF_SIZE 	20
 
@@ -35,7 +39,10 @@ FUNCTIONS
 ***********/
 
 /***** File I/O *****/
-int rd_ascii_file(char *, char **);
+int rd_ascii_file(char *, char **, int *);
 
 /***** String to Octal *****/
 int str_to_oct(char **, unsigned long *, uint16_t *, int);
+
+/***** Obj2Ascii *****/
+int obj2ascii();

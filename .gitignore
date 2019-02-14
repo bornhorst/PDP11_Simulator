@@ -9,3 +9,8 @@ ascii/obj2ascii
 # Git #
 
 *.git
+
+# Object/List Files #
+
+ascii/*.lst
+ascii/*.obj

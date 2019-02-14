@@ -12,24 +12,41 @@ int main(int argc, char *argv[]){
 
 /***** Vars *****/
 int 		n_lines;		// # lines read from file
-char 	       *fn;			// filename 
+char 	       *cmd;			// command line instruction 
+char	        fn	[BUFF_SIZE];	// filename
 char 	       *line	[LINE_SIZE];	// lines as string
 unsigned long 	oct_num	[LINE_SIZE];	// lines as u_long
 uint16_t	oct16	[LINE_SIZE];	// lines as u_16
+int		ret;			// return value
+
+/***** Initial Vars *****/
+n_lines = 0;
+ret 	= ERROR_NONE;
 
 /***** Command Line Args *****/
 if(argc == 2)
-	fn = argv[1];
+	cmd = argv[1];
 else{
-	printf("Format: ./pdp filepath/filename\n");
-	return -1;
+	printf("Generate Ascii: ./pdp obj2ascii\n"
+	       "Run Simulator:  ./pdp pdp.ascii\n");
+	ret = ERROR;
+	return ret;
 }
 
-/***** File I/O *****/
-n_lines = rd_ascii_file(fn, line);
+if(!strcmp(cmd, "obj2ascii")){
+	ret = obj2ascii();
+	return ret;
+} else{ 	
+	/***** File I/O *****/	
+	snprintf(fn, BUFF_SIZE, "ascii/%s", cmd);
+ 	ret = rd_ascii_file(fn, line, &n_lines);
 
-/***** String -> Octal *****/
-str_to_oct(line, oct_num, oct16, n_lines);
+	/***** String -> Octal *****/
+	ret = str_to_oct(line, oct_num, oct16, n_lines);
+
+	if(ret == ERROR)
+		return ret;
+}
 
 #ifdef DEBUG
 for(int i = 0; i < n_lines; i++){
@@ -46,6 +63,6 @@ for(int i = 0; i < n_lines; i++){
 	free(line[i]);
 }
 
-return 0;
+return ret;
 
 }

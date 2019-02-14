@@ -6,5 +6,5 @@ compile: core/main.c core/pdp.c
 clean:
 	rm pdp 
 
-clean ascii:
+cleanascii:
 	rm ascii/pdp.obj ascii/pdp.lst

@@ -1,5 +1,11 @@
 #include "pdp.h"
 
+int valid_opcode(uint16_t opcode) {
+
+
+
+}
+
 /**********
 
 Get all word instructions

@@ -34,6 +34,31 @@ DEFINES
 
 /**********
 
+VARIABLES
+
+**********/
+
+/**********
+
+STRUCTS
+
+**********/
+typedef struct {
+	uint16_t 	opcode;
+	uint8_t		mode_dd;
+	uint8_t		dd;
+} instr_single;
+
+typedef struct {
+	uint8_t 	opcode;
+	uint8_t		mode_ss;
+	uint8_t		ss;
+	uint8_t		mode_dd;
+	uint8_t		dd;
+} instr_double;
+
+/**********
+
 FUNCTIONS
 
 ***********/
@@ -46,3 +71,9 @@ int str_to_oct(char **, unsigned long *, uint16_t *, int);
 
 /***** Obj2Ascii *****/
 int obj2ascii();
+
+/***** Byte Instruction *****/
+int get_byte_instrs(uint16_t *, instr_single *, instr_double *, int);
+
+/***** Word Instruction *****/
+int get_instruction(uint16_t *, instr_single *, instr_double *, int, int *, int *);

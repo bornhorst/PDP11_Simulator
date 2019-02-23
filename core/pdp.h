@@ -39,26 +39,26 @@ VARIABLES
 **********/
 
 /***** Single Operand - Word *****/
-static const uint16_t JMP 	= 0001000;
-static const uint16_t SWAB	= 0003000;
-static const uint16_t BR	= 0004000;
-static const uint16_t BNE 	= 0010000;
-static const uint16_t BEQ 	= 0014000;
-static const uint16_t BGE 	= 0020000;
-static const uint16_t BLT 	= 0024000;
-static const uint16_t BGT 	= 0030000;
-static const uint16_t BLE 	= 0034000;
-static const uint16_t CLR 	= 0050000;
-static const uint16_t COM	= 0051000;
-static const uint16_t INC	= 0052000;
-static const uint16_t DEC	= 0053000;
-static const uint16_t NEG	= 0054000;
-static const uint16_t ADC	= 0055000;
-static const uint16_t SBC	= 0056000;
-static const uint16_t ROR	= 0060000;
-static const uint16_t ROL	= 0061000;
-static const uint16_t ASR	= 0062000;
-static const uint16_t ASL 	= 0063000;
+static const uint16_t JMP 	= 000100;
+static const uint16_t SWAB	= 000300;
+static const uint16_t BR	= 000400;
+static const uint16_t BNE 	= 001000;
+static const uint16_t BEQ 	= 001400;
+static const uint16_t BGE 	= 002000;
+static const uint16_t BLT 	= 002400;
+static const uint16_t BGT 	= 003000;
+static const uint16_t BLE 	= 003400;
+static const uint16_t CLR 	= 005000;
+static const uint16_t COM	= 005100;
+static const uint16_t INC	= 005200;
+static const uint16_t DEC	= 005300;
+static const uint16_t NEG	= 005400;
+static const uint16_t ADC	= 005500;
+static const uint16_t SBC	= 005600;
+static const uint16_t ROR	= 006000;
+static const uint16_t ROL	= 006100;
+static const uint16_t ASR	= 006200;
+static const uint16_t ASL 	= 006300;
 
 /***** Double Operand - Word *****/
 static const uint16_t MOV 	= 0010000;
@@ -131,10 +131,14 @@ FUNCTIONS
 int rd_ascii_file(char *, char **, int *);
 
 /***** String to Octal *****/
-int str_to_oct(char **, unsigned long *, uint16_t *, int);
+int str_to_oct(char **, unsigned long *, uint16_t *, int, uint16_t *);
 
 /***** Obj2Ascii *****/
 int obj2ascii();
 
 /***** Word Instruction *****/
-int get_instruction(uint16_t *, instr_single *, instr_double *, int, int *, int *);
+int get_instruction(uint16_t *, instr_single *, instr_double *, 
+		    int, int *, int *);
+
+/***** Determin Valid Opcode *****/
+int valid_opcode(uint16_t, uint16_t, int); 

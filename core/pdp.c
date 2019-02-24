@@ -7,7 +7,6 @@ int valid = 0;
 uint16_t d1_mask = 0000070;
 uint16_t d2_mask = 0007000;
 
-printf("addr mode: %06o\n", (mode & mask));
 /***** Single Operand *****/
 if((mode & mask) == s_REG)
 	valid = 1;
@@ -256,6 +255,10 @@ uint16_t d_dd_mask		= 000007;
 uint16_t s_mode_mask	= 0000077;
 uint16_t d_mode_mask	= 0007070;
 
+/***** Branch Offset Mask *****/
+uint16_t br_offset_mask = 0000377;
+uint16_t temp_branch	= 0000000;
+
 /***** Assign Byte Instructions to Struct *****/
 for(int i = instr_start; i < n_lines; i++) {
 	if((oct[i] & single_byte_mask) == single_byte_mask) {
@@ -269,17 +272,25 @@ for(int i = instr_start; i < n_lines; i++) {
 		d[*n_double].mode_dd   	= (oct[i] & d_mode_dd_mask) 	>> 3;
 		d[*n_double].dd		= (oct[i] & d_dd_mask);
 
+		temp_branch = oct[i] - (oct[i] & br_offset_mask);
+
 		/***** Only Assign if Opcode Valid *****/
-		if(valid_opcode(s[*n_single].opcode, s_op_mask, BYTE)) { 
-			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
-					       s_mode_mask);
-			++(*n_single);	
-		} else if(valid_opcode(d[*n_double].opcode, d_op_mask, BYTE)) { 
+		if(valid_opcode(d[*n_double].opcode, d_op_mask, BYTE)) { 
 			ret = check_addr_mode(((d[*n_double].mode_ss << 9) | 
 					       (d[*n_double].mode_dd << 3)), 
 					        d_mode_mask);
 			++(*n_double);
-		}
+		} else if(valid_opcode(s[*n_single].opcode, s_op_mask, BYTE)) { 
+			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
+					       s_mode_mask);
+			++(*n_single);
+		} else if(valid_opcode(temp_branch, s_op_mask, BYTE)) {
+			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
+			s[*n_single].mode_dd	= (temp_branch & s_mode_dd_mask) >> 3;
+			s[*n_single].mode_dd	= (temp_branch & s_dd_mask);
+			++(*n_single);
+		} else
+			continue;
 	}
 }
 
@@ -302,6 +313,8 @@ for(int i = instr_start; i < n_lines; i++) {
 		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) 	>> 3;
 		s[*n_single].dd		= (oct[i] & s_dd_mask);
 
+		temp_branch = oct[i] - (oct[i] & br_offset_mask);
+
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode((d[*n_double].opcode << 12), d_op_mask, WORD)) { 
 			ret = check_addr_mode(((d[*n_double].mode_ss << 9) | 
@@ -312,10 +325,16 @@ for(int i = instr_start; i < n_lines; i++) {
 			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
 					       s_mode_mask);
 			++(*n_single);
-		}
+		} else if(valid_opcode(temp_branch, s_op_mask, WORD)) {
+			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
+			s[*n_single].mode_dd 	= (temp_branch & s_mode_dd_mask) >> 3;
+			s[*n_single].dd		= (temp_branch & s_dd_mask);
+			++(*n_single);
+		} else
+			continue;
 	}
-}
-		
+}		
+
 /***** No Valid Instructions *****/
 if(((*n_single == 0) && (*n_double == 0)) || (ret == ERROR))
 	ret = ERROR;

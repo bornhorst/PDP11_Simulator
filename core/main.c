@@ -25,6 +25,12 @@ int		ret;			// return value
 
 /***** Initialize Variables *****/
 n_lines 	= 0;
+starting_instr 	= 0;
+cmd 		= NULL;
+start_addr 	= 077777;
+addr_temp 	= 0x0;
+n_single 	= 0;
+n_double 	= 0;
 ret 		= ERROR_NONE;
 
 /***** Command Line Args *****/
@@ -46,7 +52,7 @@ else if(argc == 3) {
 if(!strcmp(cmd, "obj2ascii")){
 	ret = obj2ascii();
 	return ret;
-} else if(!strcmp(cmd, "pdp.ascii")) { 	
+} else if((!strcmp(cmd, "pdp.ascii")) && (start_addr != 077777)) { 	
 
 	/***** File I/O *****/	
 	snprintf(fn, BUFF_SIZE, "ascii/%s", cmd);
@@ -72,7 +78,9 @@ if(!strcmp(cmd, "obj2ascii")){
 		return ret;
 	}
 } else {
-	printf("Invalid Command Line Arguments\n");
+	printf("Generate Ascii: ./pdp obj2ascii\n"
+	       "Run Simulator:  ./pdp pdp.ascii "
+	       "*<address of first instruction>\n");
 	ret == ERROR;
 	return ret;
 }

@@ -78,6 +78,9 @@ static const uint16_t d2_AUT_DEC_DEF	= 0005000;
 static const uint16_t d2_IND		= 0006000;
 static const uint16_t d2_IND_DEF	= 0007000;
 
+/***** Halt Command - Stops Program *****/
+static const uint16_t HALT	= 0000000; 
+
 /***** Single Operand - Word *****/
 static const uint16_t JMP 	= 0000100;
 static const uint16_t SWAB	= 0000300;

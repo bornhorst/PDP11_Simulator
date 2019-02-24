@@ -9,6 +9,12 @@ DEFINES
 
 **********/
 
+/***** Debug *****/
+#define DEBUG
+//#undef DEBUG
+//#define AMA
+#undef AMA
+
 /***** State *****/
 #define ERROR_NONE	0
 #define ERROR	       -1
@@ -38,27 +44,61 @@ VARIABLES
 
 **********/
 
+/***** Single Operand - Addressing Mode *****/
+static const uint16_t s_REG		= 0000000;
+static const uint16_t s_REG_DEF		= 0000010;
+static const uint16_t s_AUT_INC 	= 0000020;
+static const uint16_t s_AUT_INC_DEF	= 0000030;
+static const uint16_t s_AUT_DEC		= 0000040;
+static const uint16_t s_AUT_DEC_DEF	= 0000050;
+static const uint16_t s_IND		= 0000060;
+static const uint16_t s_IND_DEF		= 0000070;
+
+static const uint16_t s_IMM		= 0000027;
+static const uint16_t s_ABS		= 0000037;
+static const uint16_t s_REL		= 0000067;
+static const uint16_t s_REL_DEF		= 0000077;
+
+/***** Double Operand - Addressing Mode *****/
+static const uint16_t d1_REG		= 0000000;
+static const uint16_t d1_REG_DEF	= 0000010;
+static const uint16_t d1_AUT_INC	= 0000020;
+static const uint16_t d1_AUT_INC_DEF	= 0000030;
+static const uint16_t d1_AUT_DEC	= 0000040;
+static const uint16_t d1_AUT_DEC_DEF	= 0000050;
+static const uint16_t d1_IND		= 0000060;
+static const uint16_t d1_IND_DEF	= 0000070;
+
+static const uint16_t d2_REG		= 0000000;
+static const uint16_t d2_REG_DEF	= 0001000;
+static const uint16_t d2_AUT_INC	= 0002000;
+static const uint16_t d2_AUT_INC_DEF	= 0003000;
+static const uint16_t d2_AUT_DEC	= 0004000;
+static const uint16_t d2_AUT_DEC_DEF	= 0005000;
+static const uint16_t d2_IND		= 0006000;
+static const uint16_t d2_IND_DEF	= 0007000;
+
 /***** Single Operand - Word *****/
-static const uint16_t JMP 	= 000100;
-static const uint16_t SWAB	= 000300;
-static const uint16_t BR	= 000400;
-static const uint16_t BNE 	= 001000;
-static const uint16_t BEQ 	= 001400;
-static const uint16_t BGE 	= 002000;
-static const uint16_t BLT 	= 002400;
-static const uint16_t BGT 	= 003000;
-static const uint16_t BLE 	= 003400;
-static const uint16_t CLR 	= 005000;
-static const uint16_t COM	= 005100;
-static const uint16_t INC	= 005200;
-static const uint16_t DEC	= 005300;
-static const uint16_t NEG	= 005400;
-static const uint16_t ADC	= 005500;
-static const uint16_t SBC	= 005600;
-static const uint16_t ROR	= 006000;
-static const uint16_t ROL	= 006100;
-static const uint16_t ASR	= 006200;
-static const uint16_t ASL 	= 006300;
+static const uint16_t JMP 	= 0000100;
+static const uint16_t SWAB	= 0000300;
+static const uint16_t BR	= 0000400;
+static const uint16_t BNE 	= 0001000;
+static const uint16_t BEQ 	= 0001400;
+static const uint16_t BGE 	= 0002000;
+static const uint16_t BLT 	= 0002400;
+static const uint16_t BGT 	= 0003000;
+static const uint16_t BLE 	= 0003400;
+static const uint16_t CLR 	= 0005000;
+static const uint16_t COM	= 0005100;
+static const uint16_t INC	= 0005200;
+static const uint16_t DEC	= 0005300;
+static const uint16_t NEG	= 0005400;
+static const uint16_t ADC	= 0005500;
+static const uint16_t SBC	= 0005600;
+static const uint16_t ROR	= 0006000;
+static const uint16_t ROL	= 0006100;
+static const uint16_t ASR	= 0006200;
+static const uint16_t ASL 	= 0006300;
 
 /***** Double Operand - Word *****/
 static const uint16_t MOV 	= 0010000;
@@ -131,14 +171,18 @@ FUNCTIONS
 int rd_ascii_file(char *, char **, int *);
 
 /***** String to Octal *****/
-int str_to_oct(char **, unsigned long *, uint16_t *, int, uint16_t *);
+int str_to_oct(char **, unsigned long *, uint16_t *, int, uint16_t *, 
+	       uint16_t, int *);
 
 /***** Obj2Ascii *****/
 int obj2ascii();
 
 /***** Word Instruction *****/
 int get_instruction(uint16_t *, instr_single *, instr_double *, 
-		    int, int *, int *);
+		    int, int *, int *, int);
 
 /***** Determin Valid Opcode *****/
 int valid_opcode(uint16_t, uint16_t, int); 
+
+/***** Find Address Mode *****/
+int check_addr_mode(uint16_t, uint16_t);

@@ -1,8 +1,5 @@
 #include "pdp.h"
 
-#define DEBUG
-
-
 /**********
 
 PDP-11 SIMULATOR
@@ -12,7 +9,10 @@ int main(int argc, char *argv[]){
 
 /***** Vars *****/
 int 		n_lines;		// # lines read from file
+int	        starting_instr;         // first program instruction
 char 	       *cmd;			// command line instruction 
+uint16_t        start_addr;		// starting address of instruction
+unsigned long   addr_temp;		// temp addr used for char/long conversion
 char	        fn	[BUFF_SIZE];	// filename
 char 	       *line	[LINE_SIZE];	// lines as string
 unsigned long 	oct_num	[LINE_SIZE];	// lines as u_long
@@ -23,24 +23,31 @@ int		n_single, n_double;	// # of single/double operand instrs
 uint16_t        PC	[LINE_SIZE];	// program counter
 int		ret;			// return value
 
-/***** Initial Vars *****/
-n_lines = 0;
-ret 	= ERROR_NONE;
+/***** Initialize Variables *****/
+n_lines 	= 0;
+ret 		= ERROR_NONE;
 
 /***** Command Line Args *****/
 if(argc == 2)
-	cmd = argv[1];
-else{
+	cmd 		= argv[1];
+else if(argc == 3) {
+	cmd 		= argv[1];
+        addr_temp 	= strtoul((&argv[2][1]), NULL, 8);
+	start_addr	= addr_temp;
+} else{
 	printf("Generate Ascii: ./pdp obj2ascii\n"
-	       "Run Simulator:  ./pdp pdp.ascii\n");
+	       "Run Simulator:  ./pdp pdp.ascii "
+	       "*<address of first instruction>\n");
 	ret = ERROR;
 	return ret;
 }
 
+/***** Run Simulator *****/
 if(!strcmp(cmd, "obj2ascii")){
 	ret = obj2ascii();
 	return ret;
-} else{ 	
+} else if(!strcmp(cmd, "pdp.ascii")) { 	
+
 	/***** File I/O *****/	
 	snprintf(fn, BUFF_SIZE, "ascii/%s", cmd);
  	ret = rd_ascii_file(fn, line, &n_lines);
@@ -50,7 +57,8 @@ if(!strcmp(cmd, "obj2ascii")){
 	}
 
 	/***** String -> Octal *****/
-	ret = str_to_oct(line, oct_num, oct16, n_lines, PC);
+	ret = str_to_oct(line, oct_num, oct16, n_lines, PC, start_addr, 
+			 &starting_instr);
 	if(ret == ERROR) {
 		printf("Conversion Error\n");
 		return ret;
@@ -58,12 +66,17 @@ if(!strcmp(cmd, "obj2ascii")){
 	
 	/***** Find Valid Instructions *****/
 	ret = get_instruction(oct16, s_instr, d_instr, n_lines, &n_single, 
-			      &n_double); 
+			      &n_double, starting_instr); 
 	if(ret == ERROR) {
 		printf("No Valid Instructions Found\n");
 		return ret;
 	}
+} else {
+	printf("Invalid Command Line Arguments\n");
+	ret == ERROR;
+	return ret;
 }
+	
 
 /***** Print Statements for Debugging *****/
 #ifdef DEBUG

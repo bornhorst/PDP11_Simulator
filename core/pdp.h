@@ -154,6 +154,8 @@ typedef struct {
 	uint16_t 	opcode;
 	uint8_t		mode_dd;
 	uint8_t		dd;
+	uint16_t	PC;
+	uint16_t	addr;
 	char 	        instr[BUFF_SIZE];
 } instr_single;
 
@@ -163,6 +165,8 @@ typedef struct {
 	uint8_t		ss;
 	uint8_t		mode_dd;
 	uint8_t		dd;
+	uint16_t	PC;
+	uint16_t	addr;
 	char	        instr[BUFF_SIZE];
 } instr_double;
 
@@ -184,7 +188,7 @@ int obj2ascii();
 
 /***** Word Instruction *****/
 int get_instruction(uint16_t *, instr_single *, instr_double *, 
-		    int, int *, int *, int);
+		    int, int *, int *, int, uint16_t *);
 
 /***** Determin Valid Opcode *****/
 int valid_opcode(uint16_t, uint16_t, int, char *); 

@@ -27,7 +27,7 @@ int		ret;			// return value
 n_lines 	= 0;
 starting_instr 	= 0;
 cmd 		= NULL;
-start_addr 	= 077777;
+start_addr 	= 0177777;
 addr_temp 	= 0x0;
 n_single 	= 0;
 n_double 	= 0;
@@ -52,7 +52,7 @@ else if(argc == 3) {
 if(!strcmp(cmd, "obj2ascii")){
 	ret = obj2ascii();
 	return ret;
-} else if((!strcmp(cmd, "pdp.ascii")) && (start_addr != 077777)) { 	
+} else if((!strcmp(cmd, "pdp.ascii")) && (start_addr != 0177777)) { 	
 
 	/***** File I/O *****/	
 	snprintf(fn, BUFF_SIZE, "ascii/%s", cmd);
@@ -72,7 +72,7 @@ if(!strcmp(cmd, "obj2ascii")){
 	
 	/***** Find Valid Instructions *****/
 	ret = get_instruction(oct16, s_instr, d_instr, n_lines, &n_single, 
-			      &n_double, starting_instr); 
+			      &n_double, starting_instr, PC); 
 	if(ret == ERROR) {
 		printf("No Valid Instructions Found\n");
 		return ret;
@@ -98,14 +98,14 @@ for(int i = 0; i < n_lines; i++){
 }
 printf("\nSINGLE_OPERAND_INSTRUCTIONS\n");
 for(int i = 0; i < n_single; i++) {
-	printf("%-5s %03o:%01o:%01o\n", s_instr[i].instr, s_instr[i].opcode, 
-		s_instr[i].mode_dd, s_instr[i].dd);
+	printf("%-5s %03o %01o %01o   %o\n", s_instr[i].instr, s_instr[i].opcode, 
+		s_instr[i].mode_dd, s_instr[i].dd, s_instr[i].PC);
 }
 printf("\nDOUBLE_OPERAND_INSTRUCTIONS\n");
 for(int i = 0; i < n_double; i++) {
-	printf("%-5s %01o:%01o:%01o:%01o:%01o\n", d_instr[i].instr, 
+	printf("%-5s %01o %01o %01o %01o %01o   %o\n", d_instr[i].instr, 
 		d_instr[i].opcode, d_instr[i].mode_ss, d_instr[i].ss, 
-		d_instr[i].mode_dd, d_instr[i].dd);
+		d_instr[i].mode_dd, d_instr[i].dd, d_instr[i].PC);
 }
 #endif
 

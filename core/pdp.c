@@ -241,7 +241,8 @@ or Double Operand Instructions
 **********/
 int get_instruction(uint16_t *oct, instr_single *s, 
 		    instr_double *d, int n_lines, 
-		    int *n_single, int *n_double, int instr_start) {
+		    int *n_single, int *n_double, int instr_start,
+		    uint16_t *PC) {
 
 int ret = ERROR_NONE;
 
@@ -276,12 +277,14 @@ for(int i = instr_start; i < n_lines; i++) {
 		s[*n_single].opcode 	= (oct[i] & s_op_mask) 		>> 6;
 		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) 	>> 3;
 		s[*n_single].dd		= (oct[i] & s_dd_mask);
+		s[*n_single].PC		= PC[i];
 	
 		d[*n_double].opcode	= (oct[i] & d_op_mask) 		>> 12;
 		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) 	>> 9;
 		d[*n_double].ss		= (oct[i] & d_ss_mask) 		>> 6;
 		d[*n_double].mode_dd   	= (oct[i] & d_mode_dd_mask) 	>> 3;
 		d[*n_double].dd		= (oct[i] & d_dd_mask);
+		d[*n_double].PC		= PC[i];
 
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
@@ -319,10 +322,12 @@ for(int i = instr_start; i < n_lines + 1; i++) {
 		d[*n_double].ss		= (oct[i] & d_ss_mask) 		>> 6;
 		d[*n_double].mode_dd   	= (oct[i] & d_mode_dd_mask) 	>> 3;
 		d[*n_double].dd		= (oct[i] & d_dd_mask);
+		d[*n_double].PC		= PC[i];
 
 		s[*n_single].opcode 	= (oct[i] & s_op_mask) 		>> 6;
 		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) 	>> 3;
 		s[*n_single].dd		= (oct[i] & s_dd_mask);
+		s[*n_single].PC		= PC[i];
 
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
@@ -343,6 +348,7 @@ for(int i = instr_start; i < n_lines + 1; i++) {
 			++(*n_single);
 		} else if((i == n_lines) && valid_opcode(oct[n_lines], 
 			   HALT, WORD, s[*n_single].instr)) {
+			s[*n_single].PC = PC[n_lines];
 			++(*n_single);
 		} else
 			continue;
@@ -412,9 +418,12 @@ for(int i = 0; i < n_lines; i++){
 
 	/***** Increment Program Counter *****/
 	if(i > 0)
-		PC[i] = PC[i-1] + 2;
+		PC[i] 		= PC[i-1] + 2;
 	else
-		PC[i] = 0;
+		PC[i] 		= 0;
+
+	if(i == (n_lines - 1))
+		PC[n_lines] 	= PC[i-1] + 2;
 
 	/***** Find the First Program Instruction *****/
 	if(start_addr == PC[i])

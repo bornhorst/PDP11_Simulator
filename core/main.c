@@ -98,14 +98,14 @@ for(int i = 0; i < n_lines; i++){
 }
 printf("\nSINGLE_OPERAND_INSTRUCTIONS\n");
 for(int i = 0; i < n_single; i++) {
-	printf("%03o:%01o:%01o\n", s_instr[i].opcode, s_instr[i].mode_dd,
-		s_instr[i].dd);
+	printf("%-5s %03o:%01o:%01o\n", s_instr[i].instr, s_instr[i].opcode, 
+		s_instr[i].mode_dd, s_instr[i].dd);
 }
 printf("\nDOUBLE_OPERAND_INSTRUCTIONS\n");
 for(int i = 0; i < n_double; i++) {
-	printf("%01o:%01o:%01o:%01o:%01o\n", d_instr[i].opcode, 
-	        d_instr[i].mode_ss, d_instr[i].ss, d_instr[i].mode_dd,
-		d_instr[i].dd);
+	printf("%-5s %01o:%01o:%01o:%01o:%01o\n", d_instr[i].instr, 
+		d_instr[i].opcode, d_instr[i].mode_ss, d_instr[i].ss, 
+		d_instr[i].mode_dd, d_instr[i].dd);
 }
 #endif
 

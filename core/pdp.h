@@ -154,6 +154,7 @@ typedef struct {
 	uint16_t 	opcode;
 	uint8_t		mode_dd;
 	uint8_t		dd;
+	char 	        instr[BUFF_SIZE];
 } instr_single;
 
 typedef struct {
@@ -162,6 +163,7 @@ typedef struct {
 	uint8_t		ss;
 	uint8_t		mode_dd;
 	uint8_t		dd;
+	char	        instr[BUFF_SIZE];
 } instr_double;
 
 /**********
@@ -185,7 +187,7 @@ int get_instruction(uint16_t *, instr_single *, instr_double *,
 		    int, int *, int *, int);
 
 /***** Determin Valid Opcode *****/
-int valid_opcode(uint16_t, uint16_t, int); 
+int valid_opcode(uint16_t, uint16_t, int, char *); 
 
 /***** Find Address Mode *****/
 int check_addr_mode(uint16_t, uint16_t);

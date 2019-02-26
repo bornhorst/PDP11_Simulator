@@ -90,7 +90,7 @@ return valid;
 Check if Opcode is Valid 
 
 **********/
-int valid_opcode(uint16_t opcode, uint16_t mask, int type) {
+int valid_opcode(uint16_t opcode, uint16_t mask, int type, char *msg) {
 
 int valid = 0;
 
@@ -100,11 +100,13 @@ if(type) {
 		valid = 1;
 	else if((opcode & mask) == SWAB)
 		valid = 1;
-	else if((opcode & mask) == BR)
-		valid = 1;
-	else if((opcode & mask) == BNE)
-		valid = 1;
-	else if((opcode & mask) == BEQ)
+	else if((opcode & mask) == BR) {
+		snprintf(msg, BUFF_SIZE, "BR");
+		valid 	= 1;
+	} else if((opcode & mask) == BNE) {
+		snprintf(msg, BUFF_SIZE, "BNE");
+		valid 	= 1;
+	} else if((opcode & mask) == BEQ)
 		valid = 1;
 	else if((opcode & mask) == BGE)
 		valid = 1;
@@ -112,17 +114,19 @@ if(type) {
 		valid = 1;
 	else if((opcode & mask) == BGT)
 		valid = 1;
-	else if((opcode & mask) == BLE)
+	else if((opcode & mask) == BLE) {
+		snprintf(msg, BUFF_SIZE, "BLE");
 		valid = 1;
-	else if((opcode & mask) == CLR)
+	} else if((opcode & mask) == CLR)
 		valid = 1;
 	else if((opcode & mask) == COM)
 		valid = 1;
 	else if((opcode & mask) == INC)
 		valid = 1;
-	else if((opcode & mask) == DEC)
+	else if((opcode & mask) == DEC) {
+		snprintf(msg, BUFF_SIZE, "DEC");
 		valid = 1;
-	else if((opcode & mask) == NEG)
+	} else if((opcode & mask) == NEG)
 		valid = 1;
 	else if((opcode & mask) == ADC)
 		valid = 1;
@@ -136,11 +140,13 @@ if(type) {
 		valid = 1;
 	else if((opcode & mask) == ASL)
 		valid = 1;
-	else if((opcode & mask) == MOV)
+	else if((opcode & mask) == MOV) {
+		snprintf(msg, BUFF_SIZE, "MOV");
+		valid 	= 1;
+	} else if((opcode & mask) == CMP) {
+		snprintf(msg, BUFF_SIZE, "CMP");
 		valid = 1;
-	else if((opcode & mask) == CMP)
-		valid = 1;
-	else if((opcode & mask) == BIT)
+	} else if((opcode & mask) == BIT)
 		valid = 1;
 	else if((opcode & mask) == BIC)
 		valid = 1;
@@ -148,17 +154,22 @@ if(type) {
 		valid = 1;
 	else if((opcode & mask) == ADD)
 		valid = 1;
-	else if((opcode & (mask | 070000)) == MUL)
+	else if((opcode & (mask | 077000)) == MUL) {
+		snprintf(msg, BUFF_SIZE, "MUL");
 		valid = 1;
-	else if((opcode & (mask | 071000)) == DIV)
+	} else if((opcode & (mask | 077000)) == DIV) {
+		snprintf(msg, BUFF_SIZE, "DIV");
 		valid = 1;
-	else if((opcode & (mask | 072000)) == ASH)
+	} else if((opcode & (mask | 072000)) == ASH)
 		valid = 1;
 	else if((opcode & (mask | 073000)) == ASHC)
 		valid = 1;
 	else if((opcode & (mask | 074000)) == XOR)
 		valid = 1;
-	else
+	else if((opcode | mask) == HALT) {
+		snprintf(msg, BUFF_SIZE, "HALT");
+		valid = 1;
+	} else
 		valid = 0;
 } else {
 	/***** Byte Instruction Opcodes *****/
@@ -275,19 +286,19 @@ for(int i = instr_start; i < n_lines; i++) {
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
 		/***** Only Assign if Opcode Valid *****/
-		if(valid_opcode(d[*n_double].opcode, d_op_mask, BYTE)) { 
+		if(valid_opcode(oct[i], d_op_mask, BYTE, d[*n_double].instr)) { 
 			ret = check_addr_mode(((d[*n_double].mode_ss << 9) | 
 					       (d[*n_double].mode_dd << 3)), 
 					        d_mode_mask);
 			++(*n_double);
-		} else if(valid_opcode(s[*n_single].opcode, s_op_mask, BYTE)) { 
+		} else if(valid_opcode(oct[i], s_op_mask, BYTE, s[*n_single].instr)) { 
 			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
 					       s_mode_mask);
 			++(*n_single);
-		} else if(valid_opcode(temp_branch, s_op_mask, BYTE)) {
+		} else if(valid_opcode(temp_branch, s_op_mask, BYTE, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
 			s[*n_single].mode_dd	= (temp_branch & s_mode_dd_mask) >> 3;
-			s[*n_single].mode_dd	= (temp_branch & s_dd_mask);
+			s[*n_single].dd		= (temp_branch & s_dd_mask);
 			++(*n_single);
 		} else
 			continue;
@@ -301,7 +312,7 @@ else
 	ret = ERROR_NONE;	
 
 /***** Assign Word Instructions to Struct *****/
-for(int i = instr_start; i < n_lines; i++) {
+for(int i = instr_start; i < n_lines + 1; i++) {
 	if((oct[i] & single_byte_mask) != single_byte_mask) {
 		d[*n_double].opcode	= (oct[i] & d_op_mask) 		>> 12;
 		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) 	>> 9;
@@ -316,19 +327,22 @@ for(int i = instr_start; i < n_lines; i++) {
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
 		/***** Only Assign if Opcode Valid *****/
-		if(valid_opcode((d[*n_double].opcode << 12), d_op_mask, WORD)) { 
+		if(valid_opcode(oct[i], d_op_mask, WORD, d[*n_double].instr)) { 
 			ret = check_addr_mode(((d[*n_double].mode_ss << 9) | 
 					       (d[*n_double].mode_dd << 3)), 
 					        d_mode_mask);
 			++(*n_double);
-		} else if(valid_opcode((s[*n_single].opcode << 6), s_op_mask, WORD)) {
+		} else if(valid_opcode(oct[i], s_op_mask, WORD, s[*n_single].instr)) {
 			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
 					       s_mode_mask);
 			++(*n_single);
-		} else if(valid_opcode(temp_branch, s_op_mask, WORD)) {
+		} else if(valid_opcode(temp_branch, s_op_mask, WORD, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
 			s[*n_single].mode_dd 	= (temp_branch & s_mode_dd_mask) >> 3;
 			s[*n_single].dd		= (temp_branch & s_dd_mask);
+			++(*n_single);
+		} else if((i == n_lines) && valid_opcode(oct[n_lines], 
+			   HALT, WORD, s[*n_single].instr)) {
 			++(*n_single);
 		} else
 			continue;

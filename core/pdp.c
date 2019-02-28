@@ -1,81 +1,68 @@
 #include "pdp.h"
 
-int check_addr_mode(uint16_t mode, uint16_t mask) {
+int check_addr_mode(uint16_t mode, uint16_t mask, int type) {
 
-int valid = 0;
+int valid 		= 0;
+uint16_t dd_pc_mask 	= 0000077;
+uint16_t ss_pc_mask 	= 0007700;
 
-uint16_t d1_mask = 0000070;
-uint16_t d2_mask = 0007000;
+int DOUBLE 		= 1;
 
-/***** Single Operand *****/
-if((mode & mask) == s_REG)
-	valid = 1;
-else if((mode & mask) == s_REG_DEF)
-	valid = 1;
-else if((mode & mask) == s_AUT_INC)
-	valid = 1;
-else if((mode & mask) == s_AUT_INC_DEF)
-	valid = 1;
-else if((mode & mask) == s_AUT_DEC)
-	valid = 1;
-else if((mode & mask) == s_AUT_DEC_DEF)
-	valid = 1;
-else if((mode & mask) == s_IND)
-	valid = 1;
-else if((mode & mask) == s_IND_DEF)
-	valid = 1;
-else if((mode & mask) == s_IMM)
-	valid = 1;
-else if((mode & mask) == s_ABS)
-	valid = 1;
-else if((mode & mask) == s_REL)
-	valid = 1;
-else if((mode & mask) == s_REL_DEF)
-	valid = 1;
-/***** Double Operand - Mode DD *****/
-else if((mode & d1_mask) == d1_REG)  
-	valid = 0;
-else if((mode & d1_mask) == d1_REG_DEF)
-	valid = 0;
-else if((mode & d1_mask) == d1_AUT_INC)
-	valid = 0;
-else if((mode & d1_mask) == d1_AUT_INC_DEF)
-	valid = 0;
-else if((mode & d1_mask) == d1_AUT_DEC)
-	valid = 0;
-else if((mode & d1_mask) == d1_AUT_DEC_DEF)
-	valid = 0;
-else if((mode & d1_mask) == d1_IND)
-	valid = 0;
-else if((mode & d1_mask) == d1_IND_DEF)
-	valid = 0;
-else
-	valid = ERROR;
+/***** Check SS Mode *****/
+if(type == DOUBLE) {
+	if((mode & ss_pc_mask) == ss_IMM)
+		valid = 1;
+	else if((mode & ss_pc_mask) == ss_ABS)
+		valid = 1;
+	else if((mode & ss_pc_mask) == ss_REL)
+		valid = 1;
+	else if((mode & ss_pc_mask) == ss_REL_DEF)
+		valid = 1;
+	else if((mode & mask) == ss_REG)
+		valid = 1;
+	else if((mode & mask) == ss_REG_DEF)
+		valid = 1;
+	else if((mode & mask) == ss_AUT_INC)
+		valid = 1;
+	else if((mode & mask) == ss_AUT_INC_DEF)
+		valid = 1;
+	else if((mode & mask) == ss_AUT_DEC)
+		valid = 1;
+	else if((mode & mask) == ss_AUT_DEC_DEF)
+		valid = 1;
+	else if((mode & mask) == ss_IND)
+		valid = 1;
+	else if((mode & mask) == ss_IND_DEF)
+		valid = 1;
+	else
+		valid = ERROR;
+}
 
-/*-----
- 	
-Here we have to check the second operand as well
-because each operand can have a different mode.
-
------*/
-
-/***** Double Operand - Mode SS *****/
-if(valid == 0) {
-	if((mode & d2_mask) == d2_REG)
+/***** Check DD Mode *****/
+if(valid) {
+	if((mode & dd_pc_mask) == dd_IMM)
 		valid = 1;
-	else if((mode & d2_mask) == d2_REG_DEF)
+	else if((mode & dd_pc_mask) == dd_ABS)
 		valid = 1;
-	else if((mode & d2_mask) == d2_AUT_INC)
+	else if((mode & dd_pc_mask) == dd_REL)
 		valid = 1;
-	else if((mode & d2_mask) == d2_AUT_INC_DEF)
+	else if((mode & dd_pc_mask) == dd_REL_DEF)
 		valid = 1;
-	else if((mode & d2_mask) == d2_AUT_DEC)
+	else if((mode & mask) == dd_REG)
 		valid = 1;
-	else if((mode & d2_mask) == d2_AUT_DEC_DEF)
+	else if((mode & mask) == dd_REG_DEF)
 		valid = 1;
-	else if((mode & d2_mask) == d2_IND)
+	else if((mode & mask) == dd_AUT_INC)
 		valid = 1;
-	else if((mode & d2_mask) == d2_IND_DEF)
+	else if((mode & mask) == dd_AUT_INC_DEF)
+		valid = 1;
+	else if((mode & mask) == dd_AUT_DEC)
+		valid = 1;
+	else if((mode & mask) == dd_AUT_DEC_DEF)
+		valid = 1;
+	else if((mode & mask) == dd_IND)
+		valid = 1;
+	else if((mode & mask) == dd_IND_DEF)
 		valid = 1;
 	else
 		valid = ERROR;
@@ -250,6 +237,9 @@ int ret = ERROR_NONE;
 int BYTE = 0;
 int WORD = 1;
 
+int SINGLE = 0;
+int DOUBLE = 1;
+
 /***** Masks for Single Operand Values *****/
 uint32_t single_byte_mask 	= 01 << 15;
 uint16_t s_op_mask 		= 077700;
@@ -264,8 +254,8 @@ uint16_t d_mode_dd_mask		= 000070;
 uint16_t d_dd_mask		= 000007;
 
 /***** Masks for Address Modes *****/
-uint16_t s_mode_mask	= 0000077;
-uint16_t d_mode_mask	= 0007070;
+uint16_t ss_mode_mask	= 0007000;
+uint16_t dd_mode_mask	= 0000070;
 
 /***** Branch Offset Mask *****/
 uint16_t br_offset_mask = 0000377;
@@ -290,13 +280,10 @@ for(int i = instr_start; i < n_lines; i++) {
 
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode(oct[i], d_op_mask, BYTE, d[*n_double].instr)) { 
-			ret = check_addr_mode(((d[*n_double].mode_ss << 9) | 
-					       (d[*n_double].mode_dd << 3)), 
-					        d_mode_mask);
+			ret = check_addr_mode(oct[i], dd_mode_mask | ss_mode_mask, DOUBLE);
 			++(*n_double);
 		} else if(valid_opcode(oct[i], s_op_mask, BYTE, s[*n_single].instr)) { 
-			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
-					       s_mode_mask);
+			ret = check_addr_mode(oct[i], dd_mode_mask, SINGLE);
 			++(*n_single);
 		} else if(valid_opcode(temp_branch, s_op_mask, BYTE, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
@@ -333,13 +320,10 @@ for(int i = instr_start; i < n_lines; i++) {
 
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode(oct[i], d_op_mask, WORD, d[*n_double].instr)) { 
-			ret = check_addr_mode(((d[*n_double].mode_ss << 9) | 
-					       (d[*n_double].mode_dd << 3)), 
-					        d_mode_mask);
+			ret = check_addr_mode(oct[i], dd_mode_mask | ss_mode_mask, DOUBLE);
 			++(*n_double);
 		} else if(valid_opcode(oct[i], s_op_mask, WORD, s[*n_single].instr)) {
-			ret = check_addr_mode((s[*n_single].mode_dd << 3), 
-					       s_mode_mask);
+			ret = check_addr_mode(oct[i], dd_mode_mask, SINGLE);
 			++(*n_single);
 		} else if(valid_opcode(temp_branch, s_op_mask, WORD, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;

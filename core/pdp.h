@@ -34,39 +34,35 @@ VARIABLES
 
 **********/
 
-/***** Single Operand - Addressing Mode *****/
-static const uint16_t s_REG		= 0000000;
-static const uint16_t s_REG_DEF		= 0000010;
-static const uint16_t s_AUT_INC 	= 0000020;
-static const uint16_t s_AUT_INC_DEF	= 0000030;
-static const uint16_t s_AUT_DEC		= 0000040;
-static const uint16_t s_AUT_DEC_DEF	= 0000050;
-static const uint16_t s_IND		= 0000060;
-static const uint16_t s_IND_DEF		= 0000070;
+/***** Addressing Modes *****/
+static const uint16_t dd_REG		= 0000000;
+static const uint16_t dd_REG_DEF	= 0000010;
+static const uint16_t dd_AUT_INC	= 0000020;
+static const uint16_t dd_AUT_INC_DEF	= 0000030;
+static const uint16_t dd_AUT_DEC	= 0000040;
+static const uint16_t dd_AUT_DEC_DEF	= 0000050;
+static const uint16_t dd_IND		= 0000060;
+static const uint16_t dd_IND_DEF	= 0000070;
 
-static const uint16_t s_IMM		= 0000027;
-static const uint16_t s_ABS		= 0000037;
-static const uint16_t s_REL		= 0000067;
-static const uint16_t s_REL_DEF		= 0000077;
+static const uint16_t ss_REG		= 0000000;
+static const uint16_t ss_REG_DEF	= 0001000;
+static const uint16_t ss_AUT_INC	= 0002000;
+static const uint16_t ss_AUT_INC_DEF	= 0003000;
+static const uint16_t ss_AUT_DEC	= 0004000;
+static const uint16_t ss_AUT_DEC_DEF	= 0005000;
+static const uint16_t ss_IND		= 0006000;
+static const uint16_t ss_IND_DEF	= 0007000;
 
-/***** Double Operand - Addressing Mode *****/
-static const uint16_t d1_REG		= 0000000;
-static const uint16_t d1_REG_DEF	= 0000010;
-static const uint16_t d1_AUT_INC	= 0000020;
-static const uint16_t d1_AUT_INC_DEF	= 0000030;
-static const uint16_t d1_AUT_DEC	= 0000040;
-static const uint16_t d1_AUT_DEC_DEF	= 0000050;
-static const uint16_t d1_IND		= 0000060;
-static const uint16_t d1_IND_DEF	= 0000070;
+/***** Program Counter Addressing *****/
+static const uint16_t dd_IMM		= 0000027;
+static const uint16_t dd_ABS		= 0000037;
+static const uint16_t dd_REL		= 0000067;
+static const uint16_t dd_REL_DEF	= 0000077;
 
-static const uint16_t d2_REG		= 0000000;
-static const uint16_t d2_REG_DEF	= 0001000;
-static const uint16_t d2_AUT_INC	= 0002000;
-static const uint16_t d2_AUT_INC_DEF	= 0003000;
-static const uint16_t d2_AUT_DEC	= 0004000;
-static const uint16_t d2_AUT_DEC_DEF	= 0005000;
-static const uint16_t d2_IND		= 0006000;
-static const uint16_t d2_IND_DEF	= 0007000;
+static const uint16_t ss_IMM		= 0002700;
+static const uint16_t ss_ABS		= 0003700;
+static const uint16_t ss_REL		= 0006700;
+static const uint16_t ss_REL_DEF	= 0007700;
 
 /***** Halt Command - Stops Program *****/
 static const uint16_t HALT	= 0000000; 
@@ -189,4 +185,4 @@ int get_instruction(uint16_t *, instr_single *, instr_double *,
 int valid_opcode(uint16_t, uint16_t, int, char *); 
 
 /***** Find Address Mode *****/
-int check_addr_mode(uint16_t, uint16_t);
+int check_addr_mode(uint16_t, uint16_t, int);

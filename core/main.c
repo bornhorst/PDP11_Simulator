@@ -91,7 +91,7 @@ if(!strcmp(cmd, "obj2ascii")){
 /***** Print Statements for Debugging *****/
 #ifdef DEBUG
 printf("\nSTRING-----\n");
-for(int i = 0; i < n_lines; i++){
+for(int i = 0; i < n_lines+1; i++){
 	printf("%s\n", line[i]);
 }
 printf("\nOCTAL-----PC\n");

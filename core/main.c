@@ -17,8 +17,10 @@ char	        fn	[BUFF_SIZE];	// filename
 char 	       *line	[LINE_SIZE];	// lines as string
 unsigned long 	oct_num	[LINE_SIZE];	// lines as u_long
 uint16_t	oct16	[LINE_SIZE];	// lines as u_16
+var_data	data	[LINE_SIZE];	// data that gets stored before instructions
 instr_single    s_instr [LINE_SIZE];	// single operand structs
 instr_double    d_instr [LINE_SIZE];	// double operand structs
+int		n_data;			// # of stored data values
 int		n_single, n_double;	// # of single/double operand instrs
 uint16_t        PC	[LINE_SIZE];	// program counter
 int		ret;			// return value
@@ -64,7 +66,7 @@ if(!strcmp(cmd, "obj2ascii")){
 
 	/***** String -> Octal *****/
 	ret = str_to_oct(line, oct_num, oct16, n_lines, PC, start_addr, 
-			 &starting_instr);
+			 &starting_instr, data, &n_data);
 	if(ret == ERROR) {
 		printf("Conversion Error\n");
 		return ret;
@@ -96,6 +98,10 @@ printf("\nOCTAL-----PC\n");
 for(int i = 0; i < n_lines; i++){
 	printf("%06o    %03o\n", oct16[i], PC[i]);
 }
+printf("\nPROGRAM_DATA\n");
+for(int i = 0; i < n_data; i++) {
+	printf("%06o %o\n", data[i].data, data[i].addr);
+} 
 printf("\nSINGLE_OPERAND_INSTRUCTIONS\n");
 for(int i = 0; i < n_single; i++) {
 	printf("%-5s %03o %01o %01o   %o\n", s_instr[i].instr, s_instr[i].opcode, 

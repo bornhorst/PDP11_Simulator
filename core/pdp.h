@@ -26,17 +26,7 @@ DEFINES
 #define LINE_SIZE	500
 
 /***** Memory Size *****/
-#define ADDR_SIZE 	0177777
-
-/***** Octals *****/
-#define ZERO		00
-#define ONE		01
-#define TWO 		02
-#define THREE 		03
-#define FOUR		04
-#define FIVE  		05
-#define SIX		06
-#define SEVEN 		07	
+#define MAX_ADDR 	0200000;
 
 /**********
 
@@ -151,6 +141,11 @@ STRUCTS
 
 **********/
 typedef struct {
+	uint16_t	data;
+	uint16_t	addr;
+} var_data;
+
+typedef struct {
 	uint16_t 	opcode;
 	uint8_t		mode_dd;
 	uint8_t		dd;
@@ -181,7 +176,7 @@ int rd_ascii_file(char *, char **, int *);
 
 /***** String to Octal *****/
 int str_to_oct(char **, unsigned long *, uint16_t *, int, uint16_t *, 
-	       uint16_t, int *);
+	       uint16_t, int *, var_data *, int *);
 
 /***** Obj2Ascii *****/
 int obj2ascii();

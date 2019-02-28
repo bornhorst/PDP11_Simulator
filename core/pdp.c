@@ -160,11 +160,11 @@ if(type) {
 	} else if((opcode & (mask | 077000)) == DIV) {
 		snprintf(msg, BUFF_SIZE, "DIV");
 		valid = 1;
-	} else if((opcode & (mask | 072000)) == ASH)
+	} else if((opcode & (mask | 077000)) == ASH)
 		valid = 1;
-	else if((opcode & (mask | 073000)) == ASHC)
+	else if((opcode & (mask | 077000)) == ASHC)
 		valid = 1;
-	else if((opcode & (mask | 074000)) == XOR)
+	else if((opcode & (mask | 077000)) == XOR)
 		valid = 1;
 	else if((opcode | mask) == HALT) {
 		snprintf(msg, BUFF_SIZE, "HALT");
@@ -315,7 +315,7 @@ else
 	ret = ERROR_NONE;	
 
 /***** Assign Word Instructions to Struct *****/
-for(int i = instr_start; i < n_lines + 1; i++) {
+for(int i = instr_start; i < n_lines; i++) {
 	if((oct[i] & single_byte_mask) != single_byte_mask) {
 		d[*n_double].opcode	= (oct[i] & d_op_mask) 		>> 12;
 		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) 	>> 9;
@@ -346,9 +346,9 @@ for(int i = instr_start; i < n_lines + 1; i++) {
 			s[*n_single].mode_dd 	= (temp_branch & s_mode_dd_mask) >> 3;
 			s[*n_single].dd		= (temp_branch & s_dd_mask);
 			++(*n_single);
-		} else if((i == n_lines) && valid_opcode(oct[n_lines], 
+		} else if((i == n_lines-1) && valid_opcode(oct[i], 
 			   HALT, WORD, s[*n_single].instr)) {
-			s[*n_single].PC = PC[n_lines];
+			s[*n_single].PC = PC[i];
 			++(*n_single);
 		} else
 			continue;
@@ -393,6 +393,9 @@ while(fscanf(fp, "%s", buf) != EOF){
 	++(*n_lines);
 }
 
+/***** @000000 Needs to be Removed *****/
+--(*n_lines);
+
 fclose(fp);
 
 return ret;
@@ -405,7 +408,8 @@ Convert String to Octal Value
 
 **********/
 int str_to_oct(char ** line, unsigned long *oct, uint16_t *oct16, int n_lines,
-	       uint16_t *PC, uint16_t start_addr, int *start_instr){
+	       uint16_t *PC, uint16_t start_addr, int *start_instr, 
+	       var_data *data, int *n_data){
 
 char 	new_line[BUFF_SIZE];
 int	ret = ERROR_NONE;
@@ -414,7 +418,10 @@ int	ret = ERROR_NONE;
 for(int i = 0; i < n_lines; i++){
 	memmove(new_line, line[i]+1, 7);
 	oct[i] = strtoul(new_line, NULL, 8);
-	oct16[i] = oct[i];
+}
+
+for(int i = 0; i < n_lines; i++) {
+	oct16[i] = oct[i+1];
 
 	/***** Increment Program Counter *****/
 	if(i > 0)
@@ -422,12 +429,20 @@ for(int i = 0; i < n_lines; i++){
 	else
 		PC[i] 		= 0;
 
+	/***** Store the PC for the HALT Instruction *****/
 	if(i == (n_lines - 1))
 		PC[n_lines] 	= PC[i-1] + 2;
 
 	/***** Find the First Program Instruction *****/
 	if(start_addr == PC[i])
  		*start_instr = i;
+}
+
+/***** Store Program Data before Instructions *****/
+for(int i = 0; i < *start_instr; i++) {
+	data[i].data 	= oct16[i];
+	data[i].addr	= PC[i];
+	++(*n_data);
 }
 
 return ret;

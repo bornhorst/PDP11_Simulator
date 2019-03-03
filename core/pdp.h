@@ -26,7 +26,7 @@ DEFINES
 #define LINE_SIZE	500
 
 /***** Memory Size *****/
-#define MAX_ADDR 	0200000;
+#define MAX_ADDR 	0200000
 
 /**********
 
@@ -138,7 +138,9 @@ STRUCTS
 **********/
 typedef struct {
 	uint16_t	data;
-	uint16_t	addr;
+	uint16_t	PC;
+	uint16_t	memory[LINE_SIZE];
+	int		n_memory;
 } var_data;
 
 typedef struct {
@@ -146,7 +148,7 @@ typedef struct {
 	uint8_t		mode_dd;
 	uint8_t		dd;
 	uint16_t	PC;
-	uint16_t	addr;
+	uint16_t	dd_reg;
 	char 	        instr[BUFF_SIZE];
 } instr_single;
 
@@ -157,7 +159,8 @@ typedef struct {
 	uint8_t		mode_dd;
 	uint8_t		dd;
 	uint16_t	PC;
-	uint16_t	addr;
+	uint16_t	ss_reg;
+	uint16_t	dd_reg;
 	char	        instr[BUFF_SIZE];
 } instr_double;
 
@@ -185,4 +188,6 @@ int get_instruction(uint16_t *, instr_single *, instr_double *,
 int valid_opcode(uint16_t, uint16_t, int, char *); 
 
 /***** Find Address Mode *****/
-int check_addr_mode(uint16_t, uint16_t, int);
+int ss_addr_mode(uint16_t, int, int *);
+
+int dd_addr_mode(uint16_t, int, int *, int);

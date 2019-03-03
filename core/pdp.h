@@ -10,10 +10,8 @@ DEFINES
 **********/
 
 /***** Debug *****/
-#define DEBUG
-//#undef DEBUG
-//#define AMA
-#undef AMA
+//#define DEBUG		0
+//#define AMA		0
 
 /***** State *****/
 #define ERROR_NONE	0
@@ -196,7 +194,18 @@ int get_instruction(uint16_t *, instr_single *, instr_double *,
 /***** Determin Valid Opcode *****/
 int valid_opcode(uint16_t, uint16_t, int, char *); 
 
-/***** Find Address Mode *****/
+/***** Find Address Mode Source *****/
 int ss_addr_mode(uint16_t, int, int *);
 
+/***** Find Address Mode Destination *****/
 int dd_addr_mode(uint16_t, int, int *, int);
+
+/***** Store Source/Destination Values *****/
+int store_reg_vals(uint16_t *, instr_single *, instr_double *, uint16_t*, int, int, int);
+
+/***** Fetch Simulator Instructions *****/
+int fetch_instructions(uint16_t *, instr_single *, instr_double *, uint16_t *, var_data *, 
+		       sim_output *, int, int, int, int, int *);
+
+/***** Get Memory Addresses for Data Accesses *****/
+int data_mem_addr(uint16_t *, var_data *, uint16_t *, int, int); 

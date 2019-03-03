@@ -26,7 +26,6 @@ int		n_single, n_double;	// # of single/double operand instrs
 uint16_t        PC	[LINE_SIZE];	// program counter
 sim_output	sim_o	[LINE_SIZE];	// simulator output
 int		n_sim;			// # sim outputs
-int		index;			// index to octal offset
 int		ret;			// return value
 
 /***** Initialize Variables *****/
@@ -39,7 +38,6 @@ n_single 	= 0;
 n_double 	= 0;
 n_data		= 0;
 n_sim 		= 0;
-index		= 0;
 ret 		= ERROR_NONE;
 
 /***** Command Line Args *****/
@@ -51,7 +49,7 @@ else if(argc == 3) {
 	start_addr	= addr_temp;
 } else{
 	printf("Generate Ascii: ./pdp obj2ascii\n"
-	       "Run Simulator:  ./pdp pdp.ascii "
+	       "Run Simulator:  ./pdp <filename>.ascii "
 	       "*<address of first instruction>\n");
 	ret = ERROR;
 	return ret;
@@ -61,13 +59,13 @@ else if(argc == 3) {
 if(!strcmp(cmd, "obj2ascii")){
 	ret = obj2ascii();
 	return ret;
-} else if((!strcmp(cmd, "pdp.ascii")) && (start_addr != 0177777)) { 	
+} else if(start_addr != 0177777) { 	
 
 	/***** File I/O *****/	
 	snprintf(fn, BUFF_SIZE, "ascii/%s", cmd);
  	ret = rd_ascii_file(fn, line, &n_lines);
 	if(ret == ERROR) {
-		printf("File I/O Error\n");
+		printf("File I/O Error. Check filename.\n");
 		return ret;
 	}
 
@@ -75,7 +73,7 @@ if(!strcmp(cmd, "obj2ascii")){
 	ret = str_to_oct(line, oct_num, oct16, n_lines, PC, start_addr, 
 			 &starting_instr, data, &n_data);
 	if(ret == ERROR) {
-		printf("Conversion Error\n");
+		printf("Error Converting File String to Octal.\n");
 		return ret;
 	}
 	
@@ -83,103 +81,24 @@ if(!strcmp(cmd, "obj2ascii")){
 	ret = get_instruction(oct16, s_instr, d_instr, n_lines, &n_single, 
 			      &n_double, starting_instr, PC); 
 	if(ret == ERROR) {
-		printf("No Valid Instructions Found\n");
+		printf("Error Obtaining Valid Instructions.\n");
 		return ret;
 	}
 
 	/***** Get Data PC and Memory Address *****/
-	for(int i = 0; i < n_lines; i++) {
-		for(int j = 0; j < n_data; ++j) {
-			if(((data[j].PC + MAX_ADDR) - (PC[i] + 2)) == oct16[i]) { 
-				data[j].memory[data[j].n_memory] = oct16[i];
-				++data[j].n_memory;
-			}
-		}
-	}
-
-	/***** Use Address Modes to Store Operand Register Values *****/
-	for(int i = 0; i < n_lines; i++) {
-		/***** Single Operand Address Modes *****/
-		for(int j = 0; j < n_single; j++) {
-			if(PC[i] == s_instr[j].PC) {
-				ret = dd_addr_mode(oct16[i], i, &index, 0);
-				if(index != 9999)
-					s_instr[j].dd_reg = oct16[index];
-				else
-					s_instr[j].dd_reg = 000000;
-			} 
-		}
-		/***** Double Operand Address Modes *****/
-		for(int j = 0; j < n_double; j++) {
-			if(PC[i] == d_instr[j].PC) {
-				ret = dd_addr_mode(oct16[i], i, &index, 1);
-				if(index != 9999)
-					d_instr[j].dd_reg = oct16[index];
-				else
-					d_instr[j].dd_reg = 000000;
-				ret = ss_addr_mode(oct16[i], i, &index);
-				if(index != 9999)
-					d_instr[j].ss_reg = oct16[index];
-				else
-					d_instr[j].ss_reg = 000000;
-			} 
-		}
-	} 
-
-	int j = 0;
-	int k = 0;
-	n_sim = 0;
+	ret = data_mem_addr(oct16, data, PC, n_lines, n_data);
 	
-	for(int i = 4; i < n_lines; i++) {
-		for(j = 0, k = 0; (j < n_single) || (k < n_double); j++,k++) {
-		printf("%o %o %o\n", PC[i], s_instr[j].PC, d_instr[k].PC);	
-			if(PC[i] == s_instr[j].PC) {
-				sim_o[n_sim].type = 2;
-				sim_o[n_sim].addr = PC[i];
-				++n_sim;
-				if(s_instr[j].dd_reg == oct16[i+1]) {
-					printf("s_instr[%d].dd_reg: %06o oct16: %06o\n", j, s_instr[j].dd_reg, oct16[i+1]);
-					for(int m = 0; m < n_data; m++) {
-						if(((s_instr[j].dd_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
-						sim_o[n_sim].type = 1;
-						sim_o[n_sim].addr = data[m].PC;
-						++n_sim;
-						}
-					} 
-				}
-			} 
-			if(PC[i] == d_instr[k].PC) {
-				sim_o[n_sim].type = 2;
-				sim_o[n_sim].addr = PC[i];
-				++n_sim;
-				if(d_instr[k].ss_reg == oct16[i+1]) {
-					printf("d_instr[%d].ss_reg: %06o oct16: %06o\n", j, d_instr[k].ss_reg, oct16[i+1]);
-					for(int m = 0; m < n_data; m++) {
-						if(((d_instr[k].ss_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
-						sim_o[n_sim].type = 0;
-						sim_o[n_sim].addr  = data[m].PC;
-						++n_sim;
-						}	 						
-					}	 
-				}
-				if(d_instr[k].dd_reg == oct16[i+2]) {
-					printf("d_instr[%d].dd_reg: %06o oct16: %06o\n", j, d_instr[k].dd_reg, oct16[i+2]);
-					for(int m = 0; m < n_data; m++) {
-						if(((d_instr[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
-						sim_o[n_sim].type = 1;
-						sim_o[n_sim].addr  = data[m].PC;
-						++n_sim;
-						} 
-					} 
-				}
-			}
-		}
+	/***** Store Operand Data *****/
+	ret = store_reg_vals(oct16, s_instr, d_instr, PC, n_lines, n_single, n_double);
+	if(ret == ERROR) {
+		printf("Error Storing Operand Data.\n");
+		return ret;
 	}
 
-	printf("\nSIMULATOR RESULTS\n");
-	for(int i = 0; i < n_sim; i++) {
-		printf("%d %06o\n", sim_o[i].type, sim_o[i].addr);
-	}
+	/***** Determine Simulator Values *****/
+	ret = fetch_instructions(oct16, s_instr, d_instr, PC, data, sim_o, 
+				 n_lines, n_single, n_double, n_data, &n_sim);
+	
 	
 } else {
 	printf("Generate Ascii: ./pdp obj2ascii\n"
@@ -189,9 +108,8 @@ if(!strcmp(cmd, "obj2ascii")){
 	return ret;
 }
 	
-
 /***** Print Statements for Debugging *****/
-#ifdef DEBUG
+#if DEBUG || AMA
 printf("\nSTRING-----\n");
 for(int i = 0; i < n_lines+1; i++){
 	printf("%s\n", line[i]);
@@ -200,6 +118,8 @@ printf("\nOCTAL-----PC\n");
 for(int i = 0; i < n_lines; i++){
 	printf("%06o    %03o\n", oct16[i], PC[i]);
 }
+#endif
+#if DEBUG && !AMA
 printf("\nPROGRAM_DATA\n");
 for(int i = 0; i < n_data; i++) {
 	printf("%06o %o ", data[i].data, data[i].PC);
@@ -220,6 +140,13 @@ for(int i = 0; i < n_double; i++) {
 		d_instr[i].mode_dd, d_instr[i].dd, d_instr[i].ss_reg, 
 		d_instr[i].dd_reg, d_instr[i].PC);
 }
+#endif
+#if !AMA
+printf("\nSIMULATOR RESULTS\n");
+for(int i = 0; i < n_sim; i++) {
+	printf("%d %06o\n", sim_o[i].type, sim_o[i].addr);
+}
+printf("\n");
 #endif
 
 /***** Free Memory *****/

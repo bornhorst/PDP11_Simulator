@@ -1,5 +1,126 @@
 #include "pdp.h"
 
+/**********
+
+Store Simulation Results
+
+**********/
+int fetch_instructions(uint16_t *oct, instr_single *s, instr_double *d,
+		       uint16_t *PC, var_data *data, sim_output *sim,
+		       int n_lines, int n_single, int n_double, int n_data,
+		       int *n_sim) {
+
+int ret = ERROR_NONE;
+
+int j = 0;
+int k = 0;
+
+/***** Look through all ascii values *****/
+for(int i = n_data; i < n_lines; i++) {
+	/***** Check against single/double instructions *****/
+	for(j = 0, k = 0; (j < n_single) || (k < n_double); j++,k++) {
+		/***** If single op PC is the same as ascii PC, instruction found *****/	
+		if(PC[i] == s[j].PC) {
+			sim[*n_sim].type = 2;
+			sim[*n_sim].addr = PC[i];
+			++(*n_sim);
+			/***** Check to see if fetch accesses memory *****/
+			if(s[j].dd_reg == oct[i+1]) {
+				for(int m = 0; m < n_data; m++) {
+					if(((s[j].dd_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr = data[m].PC;
+					++(*n_sim);
+					}
+				} 
+			}
+		} 
+		/***** If double op PC is the same as ascii PC, instruction found *****/	
+		if(PC[i] == d[k].PC) {
+			sim[*n_sim].type = 2;
+			sim[*n_sim].addr = PC[i];
+			++(*n_sim);
+			/***** Check to see if fetch accesses memory *****/
+			if(d[k].ss_reg == oct[i+1]) {
+				for(int m = 0; m < n_data; m++) {
+					if(((d[k].ss_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr  = data[m].PC;
+					++(*n_sim);
+					}	 						
+				}	 
+			}
+			/***** Check to see if fetch accesses memory *****/
+			if(d[k].dd_reg == oct[i+2]) {
+				for(int m = 0; m < n_data; m++) {
+					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr  = data[m].PC;
+					++(*n_sim);
+					} 
+				} 
+			}
+		}
+	}
+}
+
+
+return ret;
+
+}
+
+/**********
+
+Assign both source and destination values
+
+**********/
+int store_reg_vals(uint16_t *oct, instr_single *s, instr_double *d,
+		   uint16_t *PC, int n_lines, int n_single, int n_double) {
+
+int ret 	= ERROR_NONE;
+
+int index 	= 0;
+int SINGLE 	= 0;
+int DOUBLE	= 1;
+
+/***** Use Address Modes to Store Operand Register Values *****/
+for(int i = 0; i < n_lines; i++) {
+	/***** Single Operand Address Modes *****/
+	for(int j = 0; j < n_single; j++) {
+		if(PC[i] == s[j].PC) {
+			ret = dd_addr_mode(oct[i], i, &index, SINGLE);
+			if(index != 9999)
+				s[j].dd_reg = oct[index];
+			else
+				s[j].dd_reg = 000000;
+		} 
+	}
+	/***** Double Operand Address Modes *****/
+	for(int j = 0; j < n_double; j++) {
+		if(PC[i] == d[j].PC) {
+			ret = dd_addr_mode(oct[i], i, &index, DOUBLE);
+			if(index != 9999)
+				d[j].dd_reg = oct[index];
+			else
+				d[j].dd_reg = 000000;
+			ret = ss_addr_mode(oct[i], i, &index);
+			if(index != 9999)
+				d[j].ss_reg = oct[index];
+			else
+				d[j].ss_reg = 000000;
+		} 
+	}
+} 
+
+return ret;
+
+}
+
+/**********
+
+Assign source value
+
+**********/
 int ss_addr_mode(uint16_t mode, int index, int *index_out) {
 
 /***** Masks for Address Modes *****/
@@ -38,6 +159,11 @@ return 0;
 
 }
 
+/**********
+
+Assign destination value
+
+**********/
 int dd_addr_mode(uint16_t mode, int index, int *index_out, int type) {
 
 int DOUBLE = 1;
@@ -104,6 +230,30 @@ if(type == DOUBLE) {
 }
 
 return 0;
+
+}
+
+/**********
+
+Decode memory access for data variables
+
+***********/
+int data_mem_addr(uint16_t *oct, var_data *data, uint16_t *PC, int n_lines, 
+		  int n_data) {
+
+int ret = ERROR_NONE;
+
+/***** Store memory accesses for each data variable *****/
+for(int i = 0; i < n_lines; i++) {
+	for(int j = 0; j < n_data; ++j) {
+		if(((data[j].PC + MAX_ADDR) - (PC[i] + 02)) == oct[i]) { 
+			data[j].memory[data[j].n_memory] = oct[i];
+			++data[j].n_memory;
+		}
+	}
+}
+
+return ret;
 
 }
 
@@ -482,7 +632,7 @@ const char     *o2a 		= "cd ascii; ./obj2ascii pdp.obj pdp.ascii";
 int 		ret 		= ERROR_NONE;
 
 /***** Run on Command Line *****/
-#ifdef AMA
+#if AMA
 ret = system(mac11_deb);
 #else
 ret = system(mac11);

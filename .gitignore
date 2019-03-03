@@ -3,14 +3,20 @@
 #
 
 pdp
+pdpdebug
+pdpama
 ascii/macro11
 ascii/obj2ascii
 
+#
 # Git #
+#
 
 *.git
 
+#
 # Object/List Files #
+#
 
 ascii/*.lst
 ascii/*.obj

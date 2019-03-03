@@ -24,7 +24,9 @@ instr_double    d_instr [LINE_SIZE];	// double operand structs
 int		n_data;			// # of stored data values
 int		n_single, n_double;	// # of single/double operand instrs
 uint16_t        PC	[LINE_SIZE];	// program counter
-int		index;
+sim_output	sim_o	[LINE_SIZE];	// simulator output
+int		n_sim;			// # sim outputs
+int		index;			// index to octal offset
 int		ret;			// return value
 
 /***** Initialize Variables *****/
@@ -36,6 +38,7 @@ addr_temp 	= 0x0;
 n_single 	= 0;
 n_double 	= 0;
 n_data		= 0;
+n_sim 		= 0;
 index		= 0;
 ret 		= ERROR_NONE;
 
@@ -123,6 +126,61 @@ if(!strcmp(cmd, "obj2ascii")){
 		}
 	} 
 
+	int j = 0;
+	int k = 0;
+	n_sim = 0;
+	
+	for(int i = 4; i < n_lines; i++) {
+		for(j = 0, k = 0; (j < n_single) || (k < n_double); j++,k++) {
+		printf("%o %o %o\n", PC[i], s_instr[j].PC, d_instr[k].PC);	
+			if(PC[i] == s_instr[j].PC) {
+				sim_o[n_sim].type = 2;
+				sim_o[n_sim].addr = PC[i];
+				++n_sim;
+				if(s_instr[j].dd_reg == oct16[i+1]) {
+					printf("s_instr[%d].dd_reg: %06o oct16: %06o\n", j, s_instr[j].dd_reg, oct16[i+1]);
+					for(int m = 0; m < n_data; m++) {
+						if(((s_instr[j].dd_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
+						sim_o[n_sim].type = 1;
+						sim_o[n_sim].addr = data[m].PC;
+						++n_sim;
+						}
+					} 
+				}
+			} 
+			if(PC[i] == d_instr[k].PC) {
+				sim_o[n_sim].type = 2;
+				sim_o[n_sim].addr = PC[i];
+				++n_sim;
+				if(d_instr[k].ss_reg == oct16[i+1]) {
+					printf("d_instr[%d].ss_reg: %06o oct16: %06o\n", j, d_instr[k].ss_reg, oct16[i+1]);
+					for(int m = 0; m < n_data; m++) {
+						if(((d_instr[k].ss_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
+						sim_o[n_sim].type = 0;
+						sim_o[n_sim].addr  = data[m].PC;
+						++n_sim;
+						}	 						
+					}	 
+				}
+				if(d_instr[k].dd_reg == oct16[i+2]) {
+					printf("d_instr[%d].dd_reg: %06o oct16: %06o\n", j, d_instr[k].dd_reg, oct16[i+2]);
+					for(int m = 0; m < n_data; m++) {
+						if(((d_instr[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
+						sim_o[n_sim].type = 1;
+						sim_o[n_sim].addr  = data[m].PC;
+						++n_sim;
+						} 
+					} 
+				}
+			}
+		}
+	}
+
+	printf("\nSIMULATOR RESULTS\n");
+	for(int i = 0; i < n_sim; i++) {
+		printf("%d %06o\n", sim_o[i].type, sim_o[i].addr);
+	}
+	
 } else {
 	printf("Generate Ascii: ./pdp obj2ascii\n"
 	       "Run Simulator:  ./pdp pdp.ascii "

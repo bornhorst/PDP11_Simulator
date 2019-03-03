@@ -137,6 +137,11 @@ STRUCTS
 
 **********/
 typedef struct {
+	int 		type;
+	uint16_t	addr;
+} sim_output;
+
+typedef struct {
 	uint16_t	data;
 	uint16_t	PC;
 	uint16_t	memory[LINE_SIZE];
@@ -149,6 +154,8 @@ typedef struct {
 	uint8_t		dd;
 	uint16_t	PC;
 	uint16_t	dd_reg;
+	// NZVC
+	uint8_t		flags[4];
 	char 	        instr[BUFF_SIZE];
 } instr_single;
 
@@ -161,6 +168,8 @@ typedef struct {
 	uint16_t	PC;
 	uint16_t	ss_reg;
 	uint16_t	dd_reg;
+	// NZVC
+	uint8_t		flags[4];
 	char	        instr[BUFF_SIZE];
 } instr_double;
 

@@ -49,7 +49,7 @@ else if(argc == 3) {
 	start_addr	= addr_temp;
 } else{
 	printf("Generate Ascii: ./pdp obj2ascii\n"
-	       "Run Simulator:  ./pdp <filename>.ascii "
+	       "Run Simulator:  ./pdp <filename> "
 	       "*<address of first instruction>\n");
 	ret = ERROR;
 	return ret;
@@ -62,7 +62,7 @@ if(!strcmp(cmd, "obj2ascii")){
 } else if(start_addr != 0177777) { 	
 
 	/***** File I/O *****/	
-	snprintf(fn, BUFF_SIZE, "ascii/%s", cmd);
+	snprintf(fn, BUFF_SIZE, "ascii/%s.ascii", cmd);
  	ret = rd_ascii_file(fn, line, &n_lines);
 	if(ret == ERROR) {
 		printf("File I/O Error. Check filename.\n");

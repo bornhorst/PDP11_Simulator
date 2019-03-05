@@ -45,8 +45,10 @@ if(argc == 2)
 	cmd 		= argv[1];
 else if(argc == 3) {
 	cmd 		= argv[1];
-        addr_temp 	= strtoul((&argv[2][1]), NULL, 8);
-	start_addr	= addr_temp;
+	if(argv[2][0] == '*'){
+        	addr_temp 	= strtoul((&argv[2][1]), NULL, 8);
+		start_addr	= addr_temp;
+	} 
 } else{
 	printf("Generate Ascii: ./pdp obj2ascii\n"
 	       "Run Simulator:  ./pdp <filename> "
@@ -57,7 +59,7 @@ else if(argc == 3) {
 
 /***** Run Simulator *****/
 if(!strcmp(cmd, "obj2ascii")){
-	ret = obj2ascii();
+	ret = obj2ascii(argv[2]);
 	return ret;
 } else if(start_addr != 0177777) { 	
 

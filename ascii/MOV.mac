@@ -1,0 +1,19 @@
+A:	.WORD 0
+B:	.WORD 0
+C:	.WORD 0
+D:	.WORD 0
+
+START:
+	MOV #1, A
+	MOV A, #1
+	MOV @#A, A
+	MOV @#A, R0
+	MOV A, R0
+	MOV R0, A
+	MOV A, B
+	MOV @A, R0
+	MOV R0, @A
+	MOV @A, B
+	MOV @A, @B
+	HALT
+	.END START

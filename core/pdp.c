@@ -51,7 +51,15 @@ for(int i = n_data; i < n_lines; i++) {
 				}	 
 			}
 			/***** Check to see if fetch accesses memory *****/
-			if(d[k].dd_reg == oct[i+2]) {
+			if(d[k].dd_reg == oct[i+1]) {
+				for(int m = 0; m < n_data; m++) {
+					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr  = data[m].PC;
+					++(*n_sim);
+					} 
+				} 
+			}else if(d[k].dd_reg == oct[i+2]) {
 				for(int m = 0; m < n_data; m++) {
 					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
 					sim[*n_sim].type = 1;
@@ -135,7 +143,7 @@ if((mode & ss_pc_mask) == ss_IMM){
 }else if((mode & ss_pc_mask) == ss_REL){
 	*index_out = index + 1; 
 }else if((mode & ss_pc_mask) == ss_REL_DEF){
-	*index_out = 9999;
+	*index_out = index + 1;
 }else if((mode & ss_mode_mask) == ss_REG){
 	*index_out = 9999;
 }else if((mode & ss_mode_mask) == ss_REG_DEF){
@@ -171,17 +179,34 @@ int DOUBLE = 1;
 /***** Masks for Address Modes *****/
 uint16_t dd_mode_mask	= 0000070;
 uint16_t dd_pc_mask 	= 0000077;
+uint16_t ss_pc_mask 	= 0007700;
 
 /***** Check DD Mode *****/
 if(type == DOUBLE) {
 	if((mode & dd_pc_mask) == dd_IMM){ 
-		*index_out = index + 2;
+		if(((mode & ss_pc_mask) == ss_IMM) || ((mode & ss_pc_mask) == ss_ABS) ||
+		   ((mode & ss_pc_mask) == ss_REL) || ((mode & ss_pc_mask) == ss_REL_DEF))
+			*index_out = index + 2;
+		else
+			*index_out = index + 1;
 	}else if((mode & dd_pc_mask) == dd_ABS){
-		*index_out = 9999;
+		if(((mode & ss_pc_mask) == ss_IMM) || ((mode & ss_pc_mask) == ss_ABS) ||
+		   ((mode & ss_pc_mask) == ss_REL) || ((mode & ss_pc_mask) == ss_REL_DEF))
+			*index_out = index + 2;
+		else
+			*index_out = index + 1;	
 	}else if((mode & dd_pc_mask) == dd_REL){
-		*index_out = index + 2;
+		if(((mode & ss_pc_mask) == ss_IMM) || ((mode & ss_pc_mask) == ss_ABS) ||
+		   ((mode & ss_pc_mask) == ss_REL) || ((mode & ss_pc_mask) == ss_REL_DEF))
+			*index_out = index + 2;
+		else
+			*index_out = index + 1;
 	}else if((mode & dd_pc_mask) == dd_REL_DEF){
-		*index_out = 9999;
+		if(((mode & ss_pc_mask) == ss_IMM) || ((mode & ss_pc_mask) == ss_ABS) ||
+		   ((mode & ss_pc_mask) == ss_REL) || ((mode & ss_pc_mask) == ss_REL_DEF))
+			*index_out = index + 2;
+		else
+			*index_out = index + 1;
 	}else if((mode & dd_mode_mask) == dd_REG){
 		*index_out = 9999;
 	}else if((mode & dd_mode_mask) == dd_REG_DEF){
@@ -662,23 +687,48 @@ return ret;
 Run macro11/obj2ascii Converter
 
 **********/
-int obj2ascii(){
+int obj2ascii(char *file){
 
-const char     *mac11_deb 	= "cd ascii; ./macro11 pdp.mac "
-			          "-o pdp.obj -l pdp.lst -e AMA";
-const char     *mac11		= "cd ascii; ./macro11 pdp.mac "
-				  "-o pdp.obj -l pdp.lst";
-const char     *o2a 		= "cd ascii; ./obj2ascii pdp.obj pdp.ascii"; 	 
-int 		ret 		= ERROR_NONE;
+char		buff[100];
+char		buff2[200];
+
+char	       *s1		= "cd ascii; ./macro11 ";
+char	       *s2		= ".mac -o ";
+char	       *s3		= ".obj -l ";
+char           *s4		= ".lst"; 
+char	       *s5		= " -e AMA";
+
+char	       *s6		= "cd ascii; ./obj2ascii ";
+char	       *s7		= ".obj ";
+char	       *s8		= ".ascii";
+
+int		ret		= ERROR_NONE;
+
+sprintf(buff, s1);
+sprintf(buff + strlen(buff), file);
+sprintf(buff + strlen(buff), s2);
+sprintf(buff + strlen(buff), file);
+sprintf(buff + strlen(buff), s3);
+sprintf(buff + strlen(buff), file);
+sprintf(buff + strlen(buff), s4);
+printf("%s\n", buff);
+
+sprintf(buff2, s6);
+sprintf(buff2 + strlen(buff2), file);
+sprintf(buff2 + strlen(buff2), s7);
+sprintf(buff2 + strlen(buff2), file);
+sprintf(buff2 + strlen(buff2), s8);
+printf("%s\n", buff2);
 
 /***** Run on Command Line *****/
 #if AMA
-ret = system(mac11_deb);
+sprintf(buff + strlen(buff), s5);
+ret = system(buff);
 #else
-ret = system(mac11);
+ret = system(buff);
 #endif
 
-ret = system(o2a);
+ret = system(buff2);
 
 return ret;
 

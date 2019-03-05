@@ -27,7 +27,7 @@ uint16_t        PC	[LINE_SIZE];	// program counter
 sim_output	sim_o	[LINE_SIZE];	// simulator output
 int		n_sim;			// # sim outputs
 int		ret;			// return value
-
+FILE 		*fp;			// file pointer for writing out simulator results
 /***** Initialize Variables *****/
 n_lines 	= 0;
 starting_instr 	= 0;
@@ -99,6 +99,8 @@ if(!strcmp(cmd, "obj2ascii")){
 	ret = fetch_instructions(oct16, s_instr, d_instr, PC, data, sim_o, 
 				 n_lines, n_single, n_double, n_data, &n_sim);
 	
+
+
 	
 } else {
 	printf("Generate Ascii: ./pdp obj2ascii\n"
@@ -142,10 +144,17 @@ for(int i = 0; i < n_double; i++) {
 }
 #endif
 #if !AMA
+fclose(fopen("trace.txt", "w"));
+fp = fopen("trace.txt", "a");
+if(!fp)
+	printf("File not working for writing to\n");
+
 printf("\nSIMULATOR RESULTS\n");
 for(int i = 0; i < n_sim; i++) {
 	printf("%d %06o\n", sim_o[i].type, sim_o[i].addr);
+	fprintf(fp, "%d %06o\n", sim_o[i].type, sim_o[i].addr);
 }
+fclose(fp);
 printf("\n");
 #endif
 

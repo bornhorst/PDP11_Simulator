@@ -10,7 +10,7 @@ compile: core/main.c core/pdp.c
 	gcc -o pdp core/main.c core/pdp.c -w
 
 clean:
-	rm pdp pdpama pdpdebug
+	rm pdp pdpama pdpdebug 
 
 cleanascii:
 	rm ascii/*.obj ascii/*.lst

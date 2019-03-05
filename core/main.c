@@ -28,6 +28,7 @@ sim_output	sim_o	[LINE_SIZE];	// simulator output
 int		n_sim;			// # sim outputs
 int		ret;			// return value
 FILE 		*fp;			// file pointer for writing out simulator results
+
 /***** Initialize Variables *****/
 n_lines 	= 0;
 starting_instr 	= 0;

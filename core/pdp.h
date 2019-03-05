@@ -84,7 +84,7 @@ int str_to_oct(char **, unsigned long *, uint16_t *, int, uint16_t *,
 	       uint16_t, int *, var_data *, int *);
 
 /***** Obj2Ascii *****/
-int obj2ascii();
+int obj2ascii(char *);
 
 /***** Word Instruction *****/
 int get_instruction(uint16_t *, instr_single *, instr_double *, 

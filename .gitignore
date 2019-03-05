@@ -9,6 +9,12 @@ ascii/macro11
 ascii/obj2ascii
 
 #
+# Text Files
+#
+
+*.txt
+
+#
 # Git #
 #
 

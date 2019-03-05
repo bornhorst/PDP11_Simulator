@@ -268,134 +268,182 @@ int valid = 0;
 
 /***** Word Instruction Opcodes *****/
 if(type) {
-	if((opcode & mask) == JMP)
+	if((opcode & mask) == JMP) {
+		snprintf(msg, BUFF_SIZE, "JMP");
 		valid = 1;
-	else if((opcode & mask) == SWAB)
+	}else if((opcode & mask) == SWAB){
+		snprintf(msg, BUFF_SIZE, "SWAB");
 		valid = 1;
-	else if((opcode & mask) == BR) {
+	}else if((opcode & mask) == BR){
 		snprintf(msg, BUFF_SIZE, "BR");
 		valid = 1;
-	} else if((opcode & mask) == BNE) {
+	}else if((opcode & mask) == BNE){
 		snprintf(msg, BUFF_SIZE, "BNE");
 		valid = 1;
-	} else if((opcode & mask) == BEQ)
+	}else if((opcode & mask) == BEQ){
+		snprintf(msg, BUFF_SIZE, "BEQ");
 		valid = 1;
-	else if((opcode & mask) == BGE)
+	}else if((opcode & mask) == BGE){
+		snprintf(msg, BUFF_SIZE, "BGE");
 		valid = 1;
-	else if((opcode & mask) == BLT)
+	}else if((opcode & mask) == BLT){
+		snprintf(msg, BUFF_SIZE, "BLT");
 		valid = 1;
-	else if((opcode & mask) == BGT)
+	}else if((opcode & mask) == BGT){
+		snprintf(msg, BUFF_SIZE, "BGT");
 		valid = 1;
-	else if((opcode & mask) == BLE) {
+	}else if((opcode & mask) == BLE){
 		snprintf(msg, BUFF_SIZE, "BLE");
 		valid = 1;
-	} else if((opcode & mask) == CLR)
+	}else if((opcode & mask) == CLR){
+		snprintf(msg, BUFF_SIZE, "CLR");
 		valid = 1;
-	else if((opcode & mask) == COM)
+	}else if((opcode & mask) == COM){
+		snprintf(msg, BUFF_SIZE, "COM");
 		valid = 1;
-	else if((opcode & mask) == INC)
+	}else if((opcode & mask) == INC){
+		snprintf(msg, BUFF_SIZE, "INC");
 		valid = 1;
-	else if((opcode & mask) == DEC) {
+	}else if((opcode & mask) == DEC){
 		snprintf(msg, BUFF_SIZE, "DEC");
 		valid = 1;
-	} else if((opcode & mask) == NEG)
+	}else if((opcode & mask) == NEG){
+		snprintf(msg, BUFF_SIZE, "NEG");
 		valid = 1;
-	else if((opcode & mask) == ADC)
+	}else if((opcode & mask) == ADC){
+		snprintf(msg, BUFF_SIZE, "ADC");
 		valid = 1;
-	else if((opcode & mask) == SBC)
+	}else if((opcode & mask) == SBC){
+		snprintf(msg, BUFF_SIZE, "SBC");
 		valid = 1;
-	else if((opcode & mask) == ROR)
+	}else if((opcode & mask) == ROR){
+		snprintf(msg, BUFF_SIZE, "ROR");
 		valid = 1;
-	else if((opcode & mask) == ROL)
+	}else if((opcode & mask) == ROL){
+		snprintf(msg, BUFF_SIZE, "ROL");
 		valid = 1;
-	else if((opcode & mask) == ASR)
+	}else if((opcode & mask) == ASR){
+		snprintf(msg, BUFF_SIZE, "ASR");
 		valid = 1;
-	else if((opcode & mask) == ASL)
+	}else if((opcode & mask) == ASL){
+		snprintf(msg, BUFF_SIZE, "ASL");
 		valid = 1;
-	else if((opcode & mask) == MOV) {
+	}else if((opcode & mask) == MOV){
 		snprintf(msg, BUFF_SIZE, "MOV");
 		valid 	= 1;
-	} else if((opcode & mask) == CMP) {
+	}else if((opcode & mask) == CMP){
 		snprintf(msg, BUFF_SIZE, "CMP");
 		valid = 1;
-	} else if((opcode & mask) == BIT)
+	}else if((opcode & mask) == BIT){
+		snprintf(msg, BUFF_SIZE, "BIT");
 		valid = 1;
-	else if((opcode & mask) == BIC)
+	}else if((opcode & mask) == BIC){
+		snprintf(msg, BUFF_SIZE, "BIC");
 		valid = 1;
-	else if((opcode & mask) == BIS)
+	}else if((opcode & mask) == BIS){
+		snprintf(msg, BUFF_SIZE, "BIS");
 		valid = 1;
-	else if((opcode & mask) == ADD)
+	}else if((opcode & mask) == ADD){
+		snprintf(msg, BUFF_SIZE, "ADD");
 		valid = 1;
-	else if((opcode & (mask | 077000)) == MUL) {
+	}else if((opcode & (mask | 077000)) == MUL){
 		snprintf(msg, BUFF_SIZE, "MUL");
 		valid = 1;
-	} else if((opcode & (mask | 077000)) == DIV) {
+	}else if((opcode & (mask | 077000)) == DIV){
 		snprintf(msg, BUFF_SIZE, "DIV");
 		valid = 1;
-	} else if((opcode & (mask | 077000)) == ASH)
+	}else if((opcode & (mask | 077000)) == ASH){
+		snprintf(msg, BUFF_SIZE, "ASH");
 		valid = 1;
-	else if((opcode & (mask | 077000)) == ASHC)
+	}else if((opcode & (mask | 077000)) == ASHC){
+		snprintf(msg, BUFF_SIZE, "ASHC");
 		valid = 1;
-	else if((opcode & (mask | 077000)) == XOR)
+	}else if((opcode & (mask | 077000)) == XOR){
+		snprintf(msg, BUFF_SIZE, "XOR");
 		valid = 1;
-	else if((opcode | mask) == HALT) {
+	}else if((opcode | mask) == HALT){
 		snprintf(msg, BUFF_SIZE, "HALT");
 		valid = 1;
-	} else
+	}else
 		valid = 0;
-} else {
+}else {
 	/***** Byte Instruction Opcodes *****/
-	if((opcode & mask) == BPL)
+	if((opcode & mask) == BPL){
+		snprintf(msg, BUFF_SIZE, "BPL");
 		valid = 1;
-	else if((opcode & mask) == BMI)
+	}else if((opcode & mask) == BMI){
+		snprintf(msg, BUFF_SIZE, "BMI");
 		valid = 1;
-	else if((opcode & mask) == BHI)
+	}else if((opcode & mask) == BHI){
+		snprintf(msg, BUFF_SIZE, "BHI");
 		valid = 1;
-	else if((opcode & mask) == BLOS)
+	}else if((opcode & mask) == BLOS){
+		snprintf(msg, BUFF_SIZE, "BLOS");
 		valid = 1;
-	else if((opcode & mask) == BVC)
+	}else if((opcode & mask) == BVC){
+		snprintf(msg, BUFF_SIZE, "BVC");
 		valid = 1;
-	else if((opcode & mask) == BVS)
+	}else if((opcode & mask) == BVS){
+		snprintf(msg, BUFF_SIZE, "BVS");
 		valid = 1;
-	else if((opcode & mask) == BCC)
+	}else if((opcode & mask) == BCC){
+		snprintf(msg, BUFF_SIZE, "BCC");
 		valid = 1;
-	else if((opcode & mask) == BCS)
+	}else if((opcode & mask) == BCS){
+		snprintf(msg, BUFF_SIZE, "BCS");
 		valid = 1;
-	else if((opcode & mask) == CLRB)
+	}else if((opcode & mask) == CLRB){
+		snprintf(msg, BUFF_SIZE, "CLRB");
 		valid = 1;
-	else if((opcode & mask) == COMB)
+	}else if((opcode & mask) == COMB){
+		snprintf(msg, BUFF_SIZE, "COMB");
 		valid = 1;
-	else if((opcode & mask) == INCB)
+	}else if((opcode & mask) == INCB){
+		snprintf(msg, BUFF_SIZE, "INCB");
 		valid = 1;
-	else if((opcode & mask) == DECB)
+	}else if((opcode & mask) == DECB){
+		snprintf(msg, BUFF_SIZE, "DECB");
 		valid = 1;
-	else if((opcode & mask) == NEGB)
+	}else if((opcode & mask) == NEGB){
+		snprintf(msg, BUFF_SIZE, "NEGB");
 		valid = 1;
-	else if((opcode & mask) == ADCB)
+	}else if((opcode & mask) == ADCB){
+		snprintf(msg, BUFF_SIZE, "ADCB");
 		valid = 1;
-	else if((opcode & mask) == SBCB)
+	}else if((opcode & mask) == SBCB){
+		snprintf(msg, BUFF_SIZE, "SBCB");
 		valid = 1;
-	else if((opcode & mask) == RORB)
+	}else if((opcode & mask) == RORB){
+		snprintf(msg, BUFF_SIZE, "RORB");
 		valid = 1;
-	else if((opcode & mask) == ROLB)
+	}else if((opcode & mask) == ROLB){
+		snprintf(msg, BUFF_SIZE, "ROLB");
 		valid = 1;
-	else if((opcode & mask) == ASRB)
+	}else if((opcode & mask) == ASRB){
+		snprintf(msg, BUFF_SIZE, "ASRB");
 		valid = 1;
-	else if((opcode & mask) == ASLB)
+	}else if((opcode & mask) == ASLB){
+		snprintf(msg, BUFF_SIZE, "ASLB");
 		valid = 1;
-	else if((opcode & mask) == MOVB)
+	}else if((opcode & mask) == MOVB){
+		snprintf(msg, BUFF_SIZE, "MOVB");
 		valid = 1;
-	else if((opcode & mask) == CMPB)
+	}else if((opcode & mask) == CMPB){
+		snprintf(msg, BUFF_SIZE, "CMPB");
 		valid = 1;
-	else if((opcode & mask) == BITB)
+	}else if((opcode & mask) == BITB){
+		snprintf(msg, BUFF_SIZE, "BITB");
 		valid = 1;
-	else if((opcode & mask) == BICB)
+	}else if((opcode & mask) == BICB){
+		snprintf(msg, BUFF_SIZE, "BICB");
 		valid = 1;
-	else if((opcode & mask) == BISB)
+	}else if((opcode & mask) == BISB){
+		snprintf(msg, BUFF_SIZE, "BISB");
 		valid = 1;
-	else if((opcode & mask) == SUB)
+	}else if((opcode & mask) == SUB){
+		snprintf(msg, BUFF_SIZE, "SUB");
 		valid = 1;
-	else
+	}else
 		valid = 0;
 }
 
@@ -466,12 +514,8 @@ for(int i = instr_start; i < n_lines; i++) {
 
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode(oct[i], d_op_mask, BYTE, d[*n_double].instr)) { 
-			//check_addr_mode(oct[i], dd_mode_mask | ss_mode_mask, 
-		        //  		DOUBLE, &d[*n_double].ss_reg, &d[*n_double].dd_reg);
 			++(*n_double);
 		} else if(valid_opcode(oct[i], s_op_mask, BYTE, s[*n_single].instr)) { 
-			//check_addr_mode(oct[i], dd_mode_mask, SINGLE, 
-			//		&ss_dummy, &s[*n_single].dd_reg);
 			++(*n_single);
 		} else if(valid_opcode(temp_branch, s_op_mask, BYTE, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
@@ -502,12 +546,8 @@ for(int i = instr_start; i < n_lines; i++) {
 
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode(oct[i], d_op_mask, WORD, d[*n_double].instr)) { 
-			//check_addr_mode(oct[i], dd_mode_mask | ss_mode_mask, 
-			//		DOUBLE, &d[*n_double].ss_reg, &d[*n_double].dd_reg);
 			++(*n_double);
 		} else if(valid_opcode(oct[i], s_op_mask, WORD, s[*n_single].instr)) {
-			//check_addr_mode(oct[i], dd_mode_mask, SINGLE, 
-			//	        &ss_dummy, &s[*n_single].dd_reg);
 			++(*n_single);
 		} else if(valid_opcode(temp_branch, s_op_mask, WORD, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;

@@ -22,8 +22,9 @@ for(int i = n_data; i < n_lines; i++) {
 		/***** If single op PC is the same as ascii PC, instruction found *****/	
 		if(PC[i] == s[j].PC) {
 			sim[*n_sim].type = 2;
-			sim[*n_sim].addr = PC[i];
+			sim[*n_sim].addr = s[j].PC;
 			++(*n_sim);
+			break;
 			/***** Check to see if fetch accesses memory *****/
 			if(s[j].dd_reg == oct[i+1]) {
 				for(int m = 0; m < n_data; m++) {
@@ -38,8 +39,9 @@ for(int i = n_data; i < n_lines; i++) {
 		/***** If double op PC is the same as ascii PC, instruction found *****/	
 		if(PC[i] == d[k].PC) {
 			sim[*n_sim].type = 2;
-			sim[*n_sim].addr = PC[i];
+			sim[*n_sim].addr = d[k].PC;
 			++(*n_sim);
+			break;
 			/***** Check to see if fetch accesses memory *****/
 			if(d[k].ss_reg == oct[i+1]) {
 				for(int m = 0; m < n_data; m++) {

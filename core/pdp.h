@@ -51,8 +51,6 @@ typedef struct {
 	uint8_t		dd;
 	uint16_t	PC;
 	uint16_t	dd_reg;
-	// NZVC
-	uint8_t		flags[4];
 	char 	        instr[BUFF_SIZE];
 } instr_single;
 
@@ -65,8 +63,6 @@ typedef struct {
 	uint16_t	PC;
 	uint16_t	ss_reg;
 	uint16_t	dd_reg;
-	// NZVC
-	uint8_t		flags[4];
 	char	        instr[BUFF_SIZE];
 } instr_double;
 

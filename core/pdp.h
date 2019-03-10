@@ -14,7 +14,7 @@ DEFINES
 #define ERROR	       -1
 
 /***** Buffer Size *****/
-#define BUFF_SIZE 	20
+#define BUFF_SIZE 	100
 
 /***** File I/O Buffer *****/
 #define LINE_SIZE	500
@@ -36,6 +36,7 @@ STRUCTS
 typedef struct {
 	int 		type;
 	uint16_t	addr;
+	char		descr[BUFF_SIZE];
 } sim_output;
 
 typedef struct {

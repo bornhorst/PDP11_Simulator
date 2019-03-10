@@ -68,6 +68,8 @@ static const uint16_t DIV 	= 0071000;
 static const uint16_t ASH 	= 0072000;
 static const uint16_t ASHC 	= 0073000;
 static const uint16_t XOR 	= 0074000;
+static const uint16_t JSR	= 0004000;
+static const uint16_t RTS	= 0000200;
 
 /**** Single Operand - Byte *****/
 static const uint16_t BPL 	= 0100000;

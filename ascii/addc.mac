@@ -1,0 +1,10 @@
+
+
+
+A: .WORD 077777
+B: .WORD 0001
+START:   MOV A,R1;
+	 MOV B,R2;
+	 ADD R1,R2
+	 ADC R2
+	 HALT;

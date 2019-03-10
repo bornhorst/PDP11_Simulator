@@ -24,28 +24,43 @@ for(int i = n_data; i < n_lines; i++) {
 			sim[*n_sim].type = 2;
 			sim[*n_sim].addr = s[j].PC;
 			++(*n_sim);
-			break;
 			/***** Check to see if fetch accesses memory *****/
 			if(s[j].dd_reg == oct[i+1]) {
 				for(int m = 0; m < n_data; m++) {
 					if(((s[j].dd_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
-					sim[*n_sim].type = 1;
-					sim[*n_sim].addr = data[m].PC;
-					++(*n_sim);
+						sim[*n_sim].type = 0;
+						sim[*n_sim].addr = PC[i+1];
+						++(*n_sim);
+
+						sim[*n_sim].type = 1;
+						sim[*n_sim].addr = data[m].PC;
+						++(*n_sim);
 					}
-				} 
+				}
+				if(!strcmp(s[j].instr, "JMP")){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = PC[i+1];
+					++(*n_sim);
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = s[j].dd_reg + (PC[i+1]+02);
+					++(*n_sim);
+				} 		
 			}
+			break;
 		} 
 		/***** If double op PC is the same as ascii PC, instruction found *****/	
 		if(PC[i] == d[k].PC) {
 			sim[*n_sim].type = 2;
 			sim[*n_sim].addr = d[k].PC;
 			++(*n_sim);
-			break;
 			/***** Check to see if fetch accesses memory *****/
 			if(d[k].ss_reg == oct[i+1]) {
 				for(int m = 0; m < n_data; m++) {
 					if(((d[k].ss_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = PC[i+1];
+					++(*n_sim);
+
 					sim[*n_sim].type = 0;
 					sim[*n_sim].addr  = data[m].PC;
 					++(*n_sim);
@@ -56,20 +71,37 @@ for(int i = n_data; i < n_lines; i++) {
 			if(d[k].dd_reg == oct[i+1]) {
 				for(int m = 0; m < n_data; m++) {
 					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = PC[i+1];
+					++(*n_sim);
+
 					sim[*n_sim].type = 1;
 					sim[*n_sim].addr  = data[m].PC;
 					++(*n_sim);
 					} 
 				} 
+				if(!strcmp(d[k].instr, "JSR")){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = PC[i+1];
+					++(*n_sim);
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].dd_reg + (PC[i+1]+02);
+					++(*n_sim);
+				}
 			}else if(d[k].dd_reg == oct[i+2]) {
 				for(int m = 0; m < n_data; m++) {
 					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = PC[i+2];
+					++(*n_sim);
+
 					sim[*n_sim].type = 1;
 					sim[*n_sim].addr  = data[m].PC;
 					++(*n_sim);
 					} 
 				} 
 			}
+			break;
 		}
 	}
 }
@@ -372,6 +404,12 @@ if(type) {
 		valid = 1;
 	}else if((opcode & mask) == ADD){
 		snprintf(msg, BUFF_SIZE, "ADD");
+		valid = 1;
+	}else if((opcode & (mask | 07000)) == JSR){
+		snprintf(msg, BUFF_SIZE, "JSR");
+		valid = 1;
+	}else if((opcode & ((mask | 00700) & 007700)) == RTS){
+		snprintf(msg, BUFF_SIZE, "RTS");
 		valid = 1;
 	}else if((opcode & (mask | 077000)) == MUL){
 		snprintf(msg, BUFF_SIZE, "MUL");

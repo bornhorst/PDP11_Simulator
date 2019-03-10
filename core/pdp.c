@@ -2,6 +2,34 @@
 
 /**********
 
+Set Register Values
+
+**********/
+int set_reg(uint16_t reg_val, uint16_t reg_set){
+
+	if(reg_set == 00)
+		R0 = reg_val;
+	else if(reg_set == 01)
+		R1 = reg_val;
+	else if(reg_set == 02)
+		R2 = reg_val;
+	else if(reg_set == 03)
+		R3 = reg_val;
+	else if(reg_set == 04)
+		R4 = reg_val;
+	else if(reg_set == 05)
+		R5 = reg_val;
+	else if(reg_set == 06)
+		R6 = reg_val;
+	else if(reg_set == 07)
+		R7 = reg_val;
+
+return 0;
+
+}
+
+/**********
+
 Store Simulation Results
 
 **********/
@@ -25,12 +53,47 @@ for(int i = n_data; i < n_lines; i++) {
 			sim[*n_sim].addr = s[j].PC;
 			++(*n_sim);
 			/***** Check to see if fetch accesses memory *****/
-			if(((s[j].mode_dd<<3) | s[j].dd) == 067) {
+			if(s[j].dd == 07) {
+				if(s[j].mode_dd == 02){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = s[j].PC + 02;
+					++(*n_sim);
+					set_reg(s[j].PC + 04, s[j].dd);
+				}else if(s[j].mode_dd == 03){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = s[j].PC + 02;
+					++(*n_sim);
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr = s[j].dd_reg;
+					++(*n_sim);
+					set_reg(s[j].PC + 04, s[j].dd);
+				}else if(s[j].mode_dd == 06){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = s[j].PC + 02;
+					++(*n_sim);
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr = s[j].dd_reg + (s[j].PC + 04);
+					++(*n_sim);
+					set_reg(s[j].PC + 04, s[j].dd);
+				}else if(s[j].mode_dd == 07){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = s[j].PC + 02;
+					++(*n_sim);
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = s[j].dd_reg + (s[j].PC + 04);
+					++(*n_sim);
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr = oct[s[j].dd_reg + (s[j].PC + 04)];
+					++(*n_sim);
+					set_reg(s[j].PC + 04, s[j].dd);
+				}
+			}else if(s[j].mode_dd == 06){
 				sim[*n_sim].type = 0;
 				sim[*n_sim].addr = s[j].PC + 02;
 				++(*n_sim);
-				sim[*n_sim].type = 1;
-				sim[*n_sim].addr = s[j].dd_reg + (s[j].PC + 04);
+			}else if(s[j].mode_dd == 07){
+				sim[*n_sim].type = 0;
+				sim[*n_sim].addr = s[j].PC + 02;
 				++(*n_sim);
 			}
 			break;
@@ -42,31 +105,89 @@ for(int i = n_data; i < n_lines; i++) {
 			++(*n_sim);
 			/***** Check Address Mode for Memory Access *****/
 			if(d[k].ss == 07) {
-				if(d[k].mode_ss == 06){
+				if(d[k].mode_ss == 02){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].PC + 02;
+					++(*n_sim);
+					set_reg(d[k].PC + 02, d[k].ss);
+				}else if(d[k].mode_ss == 03){
 					sim[*n_sim].type = 0;
 					sim[*n_sim].addr = d[k].PC + 02;
 					++(*n_sim);
 					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = d[k].dd_reg + (d[k].PC + 04);
+					sim[*n_sim].addr = d[k].ss_reg;
 					++(*n_sim);
+					set_reg(d[k].PC + 02, d[k].ss);
+				}else if(d[k].mode_ss == 06){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].PC + 02;
+					++(*n_sim);
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].ss_reg + (d[k].PC + 04);
+					++(*n_sim);
+					set_reg(d[k].PC + 02, d[k].ss);
+				}else if(d[k].mode_ss == 07){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].PC + 02;
+					++(*n_sim);
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = oct[d[k].PC + 02];
+					set_reg(d[k].PC + 02, d[k].ss);
 				}
+			}else if(d[k].mode_ss == 06){
+				sim[*n_sim].type = 0;
+				sim[*n_sim].addr = d[k].PC + 02;
+				++(*n_sim);
+			}else if(d[k].mode_ss == 07){
+				sim[*n_sim].type = 0;
+				sim[*n_sim].addr = d[k].PC + 02;
+				++(*n_sim);
 			}
-		
+			/***** Check Address Mode for Memory Access *****/
 			if(d[k].dd == 07){
-				if(d[k].mode_dd == 06){
+				if(d[k].mode_dd == 02){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].PC + 04;
+					++(*n_sim);
+					set_reg(d[k].PC + 04, d[k].dd);
+				}else if(d[k].mode_dd == 03){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].PC + 04;
+					++(*n_sim);
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr = d[k].dd_reg;
+					++(*n_sim);
+					set_reg(d[k].PC + 04, d[k].dd);
+				}else if(d[k].mode_dd == 06){
 					sim[*n_sim].type = 0;
 					sim[*n_sim].addr = d[k].PC + 04;
 					++(*n_sim);
 					sim[*n_sim].type = 1;
 					sim[*n_sim].addr = d[k].dd_reg + (d[k].PC + 06);
 					++(*n_sim);
+					set_reg(d[k].PC + 04, d[k].dd);
+				}else if(d[k].mode_dd == 07){
+					sim[*n_sim].type = 0;
+					sim[*n_sim].addr = d[k].PC + 04;
+					++(*n_sim);
+					sim[*n_sim].type = 1;
+					sim[*n_sim].addr = oct[d[k].PC + 04];
+					++(*n_sim);
+					set_reg(d[k].PC + 04, d[k].dd);
 				}
+			}else if(d[k].mode_dd == 06){
+				sim[*n_sim].type = 0;
+				sim[*n_sim].addr = d[k].PC + 04;
+				++(*n_sim);
+			}else if(d[k].mode_dd == 07){
+				sim[*n_sim].type = 0;
+				sim[*n_sim].addr = d[k].PC + 04;
+				++(*n_sim);
 			}
 			break;
 		}
 	}
 }
-
 
 return ret;
 

@@ -28,6 +28,20 @@ VARIABLES
 
 **********/
 
+uint16_t R0;
+uint16_t R1;
+uint16_t R2;
+uint16_t R3;
+uint16_t R4;
+uint16_t R5;
+uint16_t R6;
+uint16_t R7;
+
+uint8_t N[LINE_SIZE];
+uint8_t Z[LINE_SIZE];
+uint8_t V[LINE_SIZE];
+uint8_t C[LINE_SIZE];
+
 /**********
 
 STRUCTS
@@ -105,3 +119,6 @@ int fetch_instructions(uint16_t *, instr_single *, instr_double *, uint16_t *, v
 
 /***** Get Memory Addresses for Data Accesses *****/
 int data_mem_addr(uint16_t *, var_data *, uint16_t *, int, int); 
+
+/***** Set Register Values *****/
+int set_reg(uint16_t, uint16_t);

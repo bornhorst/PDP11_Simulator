@@ -25,26 +25,13 @@ for(int i = n_data; i < n_lines; i++) {
 			sim[*n_sim].addr = s[j].PC;
 			++(*n_sim);
 			/***** Check to see if fetch accesses memory *****/
-			if(s[j].dd_reg == oct[i+1]) {
-				for(int m = 0; m < n_data; m++) {
-					if(((s[j].dd_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
-						sim[*n_sim].type = 0;
-						sim[*n_sim].addr = PC[i+1];
-						++(*n_sim);
-
-						sim[*n_sim].type = 1;
-						sim[*n_sim].addr = data[m].PC;
-						++(*n_sim);
-					}
-				}
-				if(!strcmp(s[j].instr, "JMP")){
-					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = PC[i+1];
-					++(*n_sim);
-					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = s[j].dd_reg + (PC[i+1]+02);
-					++(*n_sim);
-				} 		
+			if(((s[j].mode_dd<<3) | s[j].dd) == 067) {
+				sim[*n_sim].type = 0;
+				sim[*n_sim].addr = s[j].PC + 02;
+				++(*n_sim);
+				sim[*n_sim].type = 1;
+				sim[*n_sim].addr = s[j].dd_reg + (s[j].PC + 04);
+				++(*n_sim);
 			}
 			break;
 		} 
@@ -53,53 +40,27 @@ for(int i = n_data; i < n_lines; i++) {
 			sim[*n_sim].type = 2;
 			sim[*n_sim].addr = d[k].PC;
 			++(*n_sim);
-			/***** Check to see if fetch accesses memory *****/
-			if(d[k].ss_reg == oct[i+1]) {
-				for(int m = 0; m < n_data; m++) {
-					if(((d[k].ss_reg + (PC[i+1]+02)) - MAX_ADDR) == data[m].PC) {
+			/***** Check Address Mode for Memory Access *****/
+			if(d[k].ss == 07) {
+				if(d[k].mode_ss == 06){
 					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = PC[i+1];
-					++(*n_sim);
-
-					sim[*n_sim].type = 0;
-					sim[*n_sim].addr  = data[m].PC;
-					++(*n_sim);
-					}	 						
-				}	 
-			}
-			/***** Check to see if fetch accesses memory *****/
-			if(d[k].dd_reg == oct[i+1]) {
-				for(int m = 0; m < n_data; m++) {
-					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
-					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = PC[i+1];
-					++(*n_sim);
-
-					sim[*n_sim].type = 1;
-					sim[*n_sim].addr  = data[m].PC;
-					++(*n_sim);
-					} 
-				} 
-				if(!strcmp(d[k].instr, "JSR")){
-					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = PC[i+1];
+					sim[*n_sim].addr = d[k].PC + 02;
 					++(*n_sim);
 					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = d[k].dd_reg + (PC[i+1]+02);
+					sim[*n_sim].addr = d[k].dd_reg + (d[k].PC + 04);
 					++(*n_sim);
 				}
-			}else if(d[k].dd_reg == oct[i+2]) {
-				for(int m = 0; m < n_data; m++) {
-					if(((d[k].dd_reg + (PC[i+2]+02)) - MAX_ADDR) == data[m].PC) {
+			}
+		
+			if(d[k].dd == 07){
+				if(d[k].mode_dd == 06){
 					sim[*n_sim].type = 0;
-					sim[*n_sim].addr = PC[i+2];
+					sim[*n_sim].addr = d[k].PC + 04;
 					++(*n_sim);
-
 					sim[*n_sim].type = 1;
-					sim[*n_sim].addr  = data[m].PC;
+					sim[*n_sim].addr = d[k].dd_reg + (d[k].PC + 06);
 					++(*n_sim);
-					} 
-				} 
+				}
 			}
 			break;
 		}
@@ -173,7 +134,7 @@ uint16_t ss_pc_mask 	= 0007700;
 if((mode & ss_pc_mask) == ss_IMM){
 	*index_out = index + 1;
 }else if((mode & ss_pc_mask) == ss_ABS){
-	*index_out = 9999;
+	*index_out = index + 1;
 }else if((mode & ss_pc_mask) == ss_REL){
 	*index_out = index + 1; 
 }else if((mode & ss_pc_mask) == ss_REL_DEF){
@@ -405,10 +366,10 @@ if(type) {
 	}else if((opcode & mask) == ADD){
 		snprintf(msg, BUFF_SIZE, "ADD");
 		valid = 1;
-	}else if((opcode & (mask | 07000)) == JSR){
+	}else if((mask == 070000) && ((opcode >> 9) == (JSR >> 9))){
 		snprintf(msg, BUFF_SIZE, "JSR");
 		valid = 1;
-	}else if((opcode & ((mask | 00700) & 007700)) == RTS){
+	}else if((mask == 070000) && ((opcode >> 6) == (RTS >> 6))){
 		snprintf(msg, BUFF_SIZE, "RTS");
 		valid = 1;
 	}else if((opcode & (mask | 077000)) == MUL){
@@ -539,7 +500,7 @@ int SINGLE = 0;
 int DOUBLE = 1;
 
 /***** Masks for Single Operand Values *****/
-uint32_t single_byte_mask 	= 01 << 15;
+uint32_t sbm		 	= 01 << 15;
 uint16_t s_op_mask 		= 077700;
 uint16_t s_mode_dd_mask 	= 000070;
 uint16_t s_dd_mask 		= 000007;
@@ -562,7 +523,7 @@ uint16_t temp_branch	= 0000000;
 
 /***** Assign Byte Instructions to Struct *****/
 for(int i = instr_start; i < n_lines; i++) {
-	if((oct[i] & single_byte_mask) == single_byte_mask) {
+	if((oct[i] & sbm) == sbm) {
 		s[*n_single].opcode 	= (oct[i] & s_op_mask) 		>> 6;
 		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) 	>> 3;
 		s[*n_single].dd		= (oct[i] & s_dd_mask);
@@ -578,11 +539,11 @@ for(int i = instr_start; i < n_lines; i++) {
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
 		/***** Only Assign if Opcode Valid *****/
-		if(valid_opcode(oct[i], d_op_mask, BYTE, d[*n_double].instr)) { 
+		if(valid_opcode(oct[i], (d_op_mask|sbm), BYTE, d[*n_double].instr)) { 
 			++(*n_double);
-		} else if(valid_opcode(oct[i], s_op_mask, BYTE, s[*n_single].instr)) { 
+		} else if(valid_opcode(oct[i], (s_op_mask|sbm), BYTE, s[*n_single].instr)) { 
 			++(*n_single);
-		} else if(valid_opcode(temp_branch, s_op_mask, BYTE, s[*n_single].instr)) {
+		} else if(valid_opcode(temp_branch, (s_op_mask|sbm), BYTE, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
 			s[*n_single].mode_dd	= (temp_branch & s_mode_dd_mask) >> 3;
 			s[*n_single].dd		= (temp_branch & s_dd_mask);
@@ -594,7 +555,7 @@ for(int i = instr_start; i < n_lines; i++) {
 
 /***** Assign Word Instructions to Struct *****/
 for(int i = instr_start; i < n_lines; i++) {
-	if((oct[i] & single_byte_mask) != single_byte_mask) {
+	if((oct[i] & sbm) != sbm) {
 		d[*n_double].opcode	= (oct[i] & d_op_mask) 		>> 12;
 		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) 	>> 9;
 		d[*n_double].ss		= (oct[i] & d_ss_mask) 		>> 6;

@@ -7,7 +7,7 @@ FIBO:	.WORD	0
 N:	.WORD	6
 
 START:
-	MOV N, FIBO
+	INC OLD
 	JSR R0, ROUTE1	
 	
 

@@ -358,7 +358,7 @@ int valid = 0;
 /***** Word Instruction Opcodes *****/
 if(type) {
 	valid = 1;
-	if((opcode & mask) == JMP) 						snprintf(msg, BUFF_SIZE, "JMP");	
+	if((opcode & mask) == JMP) 							snprintf(msg, BUFF_SIZE, "JMP");	
 	else if((opcode & mask) == SWAB)					snprintf(msg, BUFF_SIZE, "SWAB");
 	else if((opcode & mask) == BR)						snprintf(msg, BUFF_SIZE, "BR");
 	else if((opcode & mask) == BNE)						snprintf(msg, BUFF_SIZE, "BNE");
@@ -386,18 +386,18 @@ if(type) {
 	else if((opcode & mask) == ADD)						snprintf(msg, BUFF_SIZE, "ADD");
 	else if((mask == 070000) && ((opcode >> 9) == (JSR >> 9)))		snprintf(msg, BUFF_SIZE, "JSR");
 	else if((mask == 070000) && ((opcode >> 6) == (RTS >> 6)))		snprintf(msg, BUFF_SIZE, "RTS");
-	else if((opcode & (mask | 077000)) == MUL)				snprintf(msg, BUFF_SIZE, "MUL");
-	else if((opcode & (mask | 077000)) == DIV)				snprintf(msg, BUFF_SIZE, "DIV");
-	else if((opcode & (mask | 077000)) == ASH)				snprintf(msg, BUFF_SIZE, "ASH");
-	else if((opcode & (mask | 077000)) == ASHC)				snprintf(msg, BUFF_SIZE, "ASHC");
-	else if((opcode & (mask | 077000)) == XOR)				snprintf(msg, BUFF_SIZE, "XOR");
-	else if((opcode | mask) == HALT) 					snprintf(msg, BUFF_SIZE, "HALT");
+	else if((opcode & (mask | 077000)) == MUL)						snprintf(msg, BUFF_SIZE, "MUL");
+	else if((opcode & (mask | 077000)) == DIV)						snprintf(msg, BUFF_SIZE, "DIV");
+	else if((opcode & (mask | 077000)) == ASH)						snprintf(msg, BUFF_SIZE, "ASH");
+	else if((opcode & (mask | 077000)) == ASHC)						snprintf(msg, BUFF_SIZE, "ASHC");
+	else if((opcode & (mask | 077000)) == XOR)						snprintf(msg, BUFF_SIZE, "XOR");
+	else if((opcode | mask) == HALT) 								snprintf(msg, BUFF_SIZE, "HALT");
 	else
 		valid = 0;
 }else {
 	valid = 1;
 	/***** Byte Instruction Opcodes *****/
-	if((opcode & mask) == BPL) 		snprintf(msg, BUFF_SIZE, "BPL");
+	if((opcode & mask) == BPL) 			snprintf(msg, BUFF_SIZE, "BPL");
 	else if((opcode & mask) == BMI) 	snprintf(msg, BUFF_SIZE, "BMI");
 	else if((opcode & mask) == BHI)		snprintf(msg, BUFF_SIZE, "BHI");
 	else if((opcode & mask) == BLOS)	snprintf(msg, BUFF_SIZE, "BLOS");
@@ -455,14 +455,14 @@ int DOUBLE = 1;
 /***** Masks for Single Operand Values *****/
 uint32_t sbm		 	= 01 << 15;
 uint16_t s_op_mask 		= 077700;
-uint16_t s_mode_dd_mask 	= 000070;
+uint16_t s_mode_dd_mask = 000070;
 uint16_t s_dd_mask 		= 000007;
 
 /***** Masks for Double Operand Values *****/
 uint16_t d_op_mask		= 070000;
-uint16_t d_mode_ss_mask		= 007000;
+uint16_t d_mode_ss_mask	= 007000;
 uint16_t d_ss_mask		= 000700;
-uint16_t d_mode_dd_mask		= 000070;
+uint16_t d_mode_dd_mask	= 000070;
 uint16_t d_dd_mask		= 000007;
 
 /***** Masks for Address Modes *****/
@@ -478,16 +478,16 @@ uint16_t temp_branch	= 0000000;
 for(int i = instr_start; i < n_lines; i++) {
 	if((oct[i] & sbm) == sbm) {
 		s[*n_single].opcode 	= (oct[i] & s_op_mask) 		>> 6;
-		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) 	>> 3;
-		s[*n_single].dd		= (oct[i] & s_dd_mask);
-		s[*n_single].PC		= PC[i];
+		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) >> 3;
+		s[*n_single].dd			= (oct[i] & s_dd_mask);
+		s[*n_single].PC			= PC[i];
 	
-		d[*n_double].opcode	= (oct[i] & d_op_mask) 		>> 12;
-		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) 	>> 9;
-		d[*n_double].ss		= (oct[i] & d_ss_mask) 		>> 6;
-		d[*n_double].mode_dd   	= (oct[i] & d_mode_dd_mask) 	>> 3;
-		d[*n_double].dd		= (oct[i] & d_dd_mask);
-		d[*n_double].PC		= PC[i];
+		d[*n_double].opcode		= (oct[i] & d_op_mask) 		>> 12;
+		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) >> 9;
+		d[*n_double].ss			= (oct[i] & d_ss_mask) 		>> 6;
+		d[*n_double].mode_dd   	= (oct[i] & d_mode_dd_mask) >> 3;
+		d[*n_double].dd			= (oct[i] & d_dd_mask);
+		d[*n_double].PC			= PC[i];
 
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
@@ -509,17 +509,17 @@ for(int i = instr_start; i < n_lines; i++) {
 /***** Assign Word Instructions to Struct *****/
 for(int i = instr_start; i < n_lines; i++) {
 	if((oct[i] & sbm) != sbm) {
-		d[*n_double].opcode	= (oct[i] & d_op_mask) 		>> 12;
+		d[*n_double].opcode		= (oct[i] & d_op_mask) 			>> 12;
 		d[*n_double].mode_ss	= (oct[i] & d_mode_ss_mask) 	>> 9;
-		d[*n_double].ss		= (oct[i] & d_ss_mask) 		>> 6;
+		d[*n_double].ss			= (oct[i] & d_ss_mask) 			>> 6;
 		d[*n_double].mode_dd   	= (oct[i] & d_mode_dd_mask) 	>> 3;
-		d[*n_double].dd		= (oct[i] & d_dd_mask);
-		d[*n_double].PC		= PC[i];
+		d[*n_double].dd			= (oct[i] & d_dd_mask);
+		d[*n_double].PC			= PC[i];
 
-		s[*n_single].opcode 	= (oct[i] & s_op_mask) 		>> 6;
+		s[*n_single].opcode 	= (oct[i] & s_op_mask) 			>> 6;
 		s[*n_single].mode_dd 	= (oct[i] & s_mode_dd_mask) 	>> 3;
-		s[*n_single].dd		= (oct[i] & s_dd_mask);
-		s[*n_single].PC		= PC[i];
+		s[*n_single].dd			= (oct[i] & s_dd_mask);
+		s[*n_single].PC			= PC[i];
 
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 

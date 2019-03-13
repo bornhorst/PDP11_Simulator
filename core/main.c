@@ -153,6 +153,7 @@ if(!fp)
 	printf("File not working for writing to\n");
 
 printf("\nSIMULATOR RESULTS\n");
+printf("Total Instructions:       %d\n", n_double + n_single);
 for(int i = 0; i < n_sim; i++) {
 	printf("%d %06o\n", sim_o[i].type, sim_o[i].addr);
 	fprintf(fp, "%d %06o\n", sim_o[i].type, sim_o[i].addr);

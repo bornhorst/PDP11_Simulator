@@ -8,7 +8,6 @@ L9:
 
 L4:
         MOV #4, R4
-        CCC
 
 L3:
         MOV   #2, R2

@@ -5,6 +5,10 @@ A: .WORD 077777
 B: .WORD 0001
 START:   MOV A,R1;
 	 MOV B,R2;
+	 MOV @100(R0),B
+	 MOV A, @-(R1)
+	 MOV @#500,R2
+	 MOV R0,@B
 	 ADD R1,R2
 	 ADC R2
 	 HALT;

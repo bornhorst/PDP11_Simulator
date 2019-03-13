@@ -454,6 +454,8 @@ int WORD = 1;
 int SINGLE = 0;
 int DOUBLE = 1;
 
+int flag = 0;
+
 /***** Masks for Single Operand Values *****/
 uint32_t sbm		 	= 0100000;
 uint16_t s_op_mask 		= 0177700;
@@ -492,11 +494,50 @@ for(int i = instr_start; i < n_lines; i++) {
 		d[*n_double].PC			= PC[i];
 
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
-
+	
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode(oct[i], s_op_mask, BYTE, s[*n_single].instr)) { 
-			++(*n_single);
+			if(s[*n_single].dd == 07){
+				if(s[*n_single].mode_dd == 02)
+					++i;
+				else if(s[*n_single].mode_dd == 03)
+					++i;
+				else if(s[*n_single].mode_dd == 06)
+					++i;
+				else if(s[*n_single].mode_dd == 07)
+					++i;
+			} else if(s[*n_single].mode_dd == 06)
+					++i;
+			else if(s[*n_single].mode_dd == 07)
+					++i;
+		++(*n_single);
 		}else if(valid_opcode(oct[i], d_op_mask, BYTE, d[*n_double].instr)) { 
+			if(d[*n_double].ss == 07){
+				if(d[*n_double].mode_ss == 02)
+					++i;
+				else if(d[*n_double].mode_ss == 03)
+					++i;
+				else if(d[*n_double].mode_ss == 06)
+					++i;
+				else if(d[*n_double].mode_ss == 07)
+					++i;
+			} else if(d[*n_double].mode_ss == 06)
+					++i;
+			else if(d[*n_double].mode_ss == 07)
+					++i;
+			if(d[*n_double].dd == 07){
+				if(d[*n_double].mode_dd == 02)
+					++i;
+				else if(d[*n_double].mode_dd == 03)
+					++i;
+				else if(d[*n_double].mode_dd == 06)
+					++i;
+				else if(d[*n_double].mode_dd == 07)
+					++i;
+			} else if(d[*n_double].mode_dd == 06)
+					++i;
+			else if(d[*n_double].mode_dd == 07)
+					++i;
 			++(*n_double);
 		}else if(valid_opcode(temp_branch, s_op_mask, BYTE, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
@@ -527,8 +568,48 @@ for(int i = instr_start; i < n_lines; i++) {
 
 		/***** Only Assign if Opcode Valid *****/
 		if(valid_opcode(oct[i], d_op_mask, WORD, d[*n_double].instr)) { 
+			if(d[*n_double].ss == 07){
+				if(d[*n_double].mode_ss == 02)
+					++i;
+				else if(d[*n_double].mode_ss == 03)
+					++i;
+				else if(d[*n_double].mode_ss == 06)
+					++i;
+				else if(d[*n_double].mode_ss == 07)
+					++i;
+			} else if(d[*n_double].mode_ss == 06)
+					++i;
+			else if(d[*n_double].mode_ss == 07)
+					++i;
+			if(d[*n_double].dd == 07){
+				if(d[*n_double].mode_dd == 02)
+					++i;
+				else if(d[*n_double].mode_dd == 03)
+					++i;
+				else if(d[*n_double].mode_dd == 06)
+					++i;
+				else if(d[*n_double].mode_dd == 07)
+					++i;
+			} else if(d[*n_double].mode_dd == 06)
+					++i;
+			else if(d[*n_double].mode_dd == 07)
+					++i;
+		
 			++(*n_double);
 		} else if(valid_opcode(oct[i], s_op_mask, WORD, s[*n_single].instr)) {
+			if(s[*n_single].dd == 07){
+				if(s[*n_single].mode_dd == 02)
+					++i;
+				else if(s[*n_single].mode_dd == 03)
+					++i;
+				else if(s[*n_single].mode_dd == 06)
+					++i;
+				else if(s[*n_single].mode_dd == 07)
+					++i;
+			} else if(s[*n_single].mode_dd == 06)
+					++i;
+			else if(s[*n_single].mode_dd == 07)
+					++i;
 			++(*n_single);
 		} else if(valid_opcode(temp_branch, s_op_mask, WORD, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;

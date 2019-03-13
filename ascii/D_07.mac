@@ -1,0 +1,48 @@
+; File: DO_07.mac
+; Tests: Double operand subtract instruction
+
+.RADIX 10
+
+L9:
+        MOV   #3, R5
+
+L4:
+        MOV #4, R4
+        CCC
+
+L3:
+        MOV   #2, R2
+        MOV   #0, R3
+        SUB   R3, R1
+        BVS   L9
+        SUB   R2, R1
+        BVS   L4
+
+L2:
+        MOV   #-32768, R1
+        MOV   #1, R2
+        MOV   #0, R3
+        SUB   R3, R1
+        BCC   L9
+        SUB   R2, R1
+        BCC   L3
+
+L1:     
+        MOV   #5, R1
+        MOV   #3, R3
+        SUB   R3, R1 ; R1 is now 2
+        BMI   L9
+        SUB   R3, R1 ; R1 is now -1
+        BMI   L2
+
+START:
+        MOV   #5, R1
+        MOV   #2, R2
+        MOV   #3, R3
+        SUB   R2, R1 ; R1 is now 3
+        BEQ   L9
+        SUB   R3, R1 ; R1 is now 0
+        BEQ   L1
+        HALT
+
+

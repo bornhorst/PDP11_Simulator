@@ -386,18 +386,20 @@ if(type) {
 	else if((opcode & mask) == ADD)						snprintf(msg, BUFF_SIZE, "ADD");
 	else if((mask == 070000) && ((opcode >> 9) == (JSR >> 9)))		snprintf(msg, BUFF_SIZE, "JSR");
 	else if((mask == 070000) && ((opcode >> 6) == (RTS >> 6)))		snprintf(msg, BUFF_SIZE, "RTS");
-	else if((opcode & (mask | 077000)) == MUL)						snprintf(msg, BUFF_SIZE, "MUL");
-	else if((opcode & (mask | 077000)) == DIV)						snprintf(msg, BUFF_SIZE, "DIV");
-	else if((opcode & (mask | 077000)) == ASH)						snprintf(msg, BUFF_SIZE, "ASH");
-	else if((opcode & (mask | 077000)) == ASHC)						snprintf(msg, BUFF_SIZE, "ASHC");
-	else if((opcode & (mask | 077000)) == XOR)						snprintf(msg, BUFF_SIZE, "XOR");
-	else if((opcode | mask) == HALT) 								snprintf(msg, BUFF_SIZE, "HALT");
+	else if((opcode & (mask | 077000)) == MUL)				snprintf(msg, BUFF_SIZE, "MUL");
+	else if((opcode & (mask | 077000)) == DIV)				snprintf(msg, BUFF_SIZE, "DIV");
+	else if((opcode & (mask | 077000)) == ASH)				snprintf(msg, BUFF_SIZE, "ASH");
+	else if((opcode & (mask | 077000)) == ASHC)				snprintf(msg, BUFF_SIZE, "ASHC");
+	else if((opcode & (mask | 077000)) == XOR)				snprintf(msg, BUFF_SIZE, "XOR");
+	else if((opcode | mask) == HALT) 					snprintf(msg, BUFF_SIZE, "HALT");
 	else
 		valid = 0;
 }else {
 	valid = 1;
+	printf("instr: %06o\n", opcode & mask);
 	/***** Byte Instruction Opcodes *****/
-	if((opcode & mask) == BPL) 			snprintf(msg, BUFF_SIZE, "BPL");
+	uint32_t BPLmask = 0177777;
+	if((opcode & BPLmask) == BPL) 		snprintf(msg, BUFF_SIZE, "BPL");
 	else if((opcode & mask) == BMI) 	snprintf(msg, BUFF_SIZE, "BMI");
 	else if((opcode & mask) == BHI)		snprintf(msg, BUFF_SIZE, "BHI");
 	else if((opcode & mask) == BLOS)	snprintf(msg, BUFF_SIZE, "BLOS");
@@ -453,17 +455,17 @@ int SINGLE = 0;
 int DOUBLE = 1;
 
 /***** Masks for Single Operand Values *****/
-uint32_t sbm		 	= 01 << 15;
-uint16_t s_op_mask 		= 077700;
-uint16_t s_mode_dd_mask = 000070;
-uint16_t s_dd_mask 		= 000007;
+uint32_t sbm		 	= 0100000;
+uint16_t s_op_mask 		= 0177700;
+uint16_t s_mode_dd_mask 	= 0100070;
+uint16_t s_dd_mask 		= 0100007;
 
 /***** Masks for Double Operand Values *****/
-uint16_t d_op_mask		= 070000;
-uint16_t d_mode_ss_mask	= 007000;
-uint16_t d_ss_mask		= 000700;
-uint16_t d_mode_dd_mask	= 000070;
-uint16_t d_dd_mask		= 000007;
+uint16_t d_op_mask		= 0170000;
+uint16_t d_mode_ss_mask		= 0107000;
+uint16_t d_ss_mask		= 0100700;
+uint16_t d_mode_dd_mask		= 0100070;
+uint16_t d_dd_mask		= 0100007;
 
 /***** Masks for Address Modes *****/
 uint16_t ss_mode_mask	= 0007000;
@@ -492,16 +494,16 @@ for(int i = instr_start; i < n_lines; i++) {
 		temp_branch = oct[i] - (oct[i] & br_offset_mask);
 
 		/***** Only Assign if Opcode Valid *****/
-		if(valid_opcode(oct[i], (d_op_mask|sbm), BYTE, d[*n_double].instr)) { 
-			++(*n_double);
-		} else if(valid_opcode(oct[i], (s_op_mask|sbm), BYTE, s[*n_single].instr)) { 
+		if(valid_opcode(oct[i], s_op_mask, BYTE, s[*n_single].instr)) { 
 			++(*n_single);
-		} else if(valid_opcode(temp_branch, (s_op_mask|sbm), BYTE, s[*n_single].instr)) {
+		}else if(valid_opcode(oct[i], d_op_mask, BYTE, d[*n_double].instr)) { 
+			++(*n_double);
+		}else if(valid_opcode(temp_branch, s_op_mask, BYTE, s[*n_single].instr)) {
 			s[*n_single].opcode 	= (temp_branch & s_op_mask) 	 >> 6;
 			s[*n_single].mode_dd	= (temp_branch & s_mode_dd_mask) >> 3;
 			s[*n_single].dd		= (temp_branch & s_dd_mask);
 			++(*n_single);
-		} else
+		}else
 			continue;
 	}
 }

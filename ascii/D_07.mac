@@ -4,6 +4,7 @@
 .RADIX 10
 
 L9:
+	MOV   #32768, R1
         MOV   #3, R5
 
 L4:
@@ -18,7 +19,6 @@ L3:
         BVS   L4
 
 L2:
-        MOV   #-32768, R1
         MOV   #1, R2
         MOV   #0, R3
         SUB   R3, R1

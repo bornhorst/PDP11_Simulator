@@ -122,3 +122,6 @@ int data_mem_addr(uint16_t *, var_data *, uint16_t *, int, int);
 
 /***** Set Register Values *****/
 int set_reg(uint16_t, uint16_t);
+
+/***** Get Register Values *****/
+int get_reg(uint16_t *, uint16_t);

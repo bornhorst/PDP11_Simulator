@@ -1,0 +1,12 @@
+A:	.WORD 45
+B:	.WORD 777
+
+START:
+	CLRB @A
+	COMB B
+	SBCB #200
+	ASLB @60B
+	HALT
+
+	
+	

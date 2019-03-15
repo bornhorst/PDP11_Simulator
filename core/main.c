@@ -8,26 +8,26 @@ PDP-11 SIMULATOR
 int main(int argc, char *argv[]){
 
 /***** Vars *****/
-int 			n_lines;				// # lines read from file
-int	        	starting_instr;     	// first program instruction
-char 	       *cmd;					// command line instruction 
-uint16_t        start_addr;				// starting address of instruction
-unsigned long   addr_temp;				// temp addr used for char/long conversion
-char	        fn	[BUFF_SIZE];		// filename
+int 		n_lines;		// # lines read from file
+int	        starting_instr;     	// first program instruction
+char 	       *cmd;			// command line instruction 
+uint16_t        start_addr;		// starting address of instruction
+unsigned long   addr_temp;		// temp addr used for char/long conversion
+char	        fn	[BUFF_SIZE];	// filename
 char 	       *line	[LINE_SIZE];	// lines as string
 unsigned long 	oct_num	[LINE_SIZE];	// lines as u_long
-uint16_t		oct16	[LINE_SIZE];	// lines as u_16
-var_data		data	[LINE_SIZE];	// data that gets stored before instructions
-uint16_t		memory	[LINE_SIZE];	// memory addresses
+uint16_t	oct16	[LINE_SIZE];	// lines as u_16
+var_data	data	[LINE_SIZE];	// data that gets stored before instructions
+uint16_t	memory	[LINE_SIZE];	// memory addresses
 instr_single    s_instr [LINE_SIZE];	// single operand structs
 instr_double    d_instr [LINE_SIZE];	// double operand structs
-int				n_data;					// # of stored data values
-int				n_single, n_double;		// # of single/double operand instrs
-uint16_t        PC	[LINE_SIZE];		// program counter
-sim_output		sim_o	[LINE_SIZE];	// simulator output
-int				n_sim;					// # sim outputs
-int				ret;					// return value
-FILE 			*fp;					// file pointer for writing out simulator results
+int		n_data;			// # of stored data values
+int		n_single, n_double;	// # of single/double operand instrs
+uint16_t        PC	[LINE_SIZE];	// program counter
+sim_output	sim_o	[LINE_SIZE];	// simulator output
+int		n_sim;			// # sim outputs
+int		ret;			// return value
+FILE 		*fp;			// file pointer for writing out simulator results
 
 /***** Initialize Variables *****/
 n_lines 	= 0;
@@ -47,9 +47,9 @@ if(argc == 2)
 else if(argc == 3) {
 	cmd = argv[1];
 	if(argv[2][0] == '*'){
-        addr_temp 	= strtoul((&argv[2][1]), NULL, 8);
+        	addr_temp 	= strtoul((&argv[2][1]), NULL, 8);
 		start_addr	= addr_temp;
-	} 
+	}
 } else{
 	printf("Generate Ascii: ./pdp obj2ascii\n"
 	       "Run Simulator:  ./pdp <filename> "
@@ -62,7 +62,7 @@ else if(argc == 3) {
 if(!strcmp(cmd, "obj2ascii")){
 	ret = obj2ascii(argv[2]);
 	return ret;
-} else if(start_addr != 0177777) { 	
+} else if(start_addr != 0177777){
 
 	/***** File I/O *****/	
 	snprintf(fn, BUFF_SIZE, "ascii/%s.ascii", cmd);
@@ -105,13 +105,8 @@ if(!strcmp(cmd, "obj2ascii")){
 
 
 	
-} else {
-	printf("Generate Ascii: ./pdp obj2ascii\n"
-	       "Run Simulator:  ./pdp pdp.ascii "
-	       "*<address of first instruction>\n");
-	ret == ERROR;
-	return ret;
-}
+}else
+	printf("Invalid Command Line Arguments.\n");
 	
 /***** Print Statements for Debugging *****/
 #if DEBUG || AMA
